@@ -36,7 +36,7 @@ const Hero = () => {
           
           <div className="flex items-center gap-8 pt-8">
             <div className="text-center">
-              <div className="text-2xl font-bold text-health-green">10K+</div>
+              <div className="text-2xl font-bold text-health-pink">10K+</div>
               <div className="text-sm text-muted-foreground">Pets monitorados</div>
             </div>
             <div className="text-center">
@@ -62,7 +62,7 @@ const Hero = () => {
           {/* Floating cards */}
           <div className="absolute -top-4 -right-4 bg-card p-4 rounded-xl shadow-card border border-border">
             <div className="flex items-center gap-2">
-              <div className="w-3 h-3 bg-health-green rounded-full animate-pulse" />
+              <div className="w-3 h-3 bg-health-pink rounded-full animate-pulse" />
               <span className="text-sm font-medium">Status: Saudável</span>
             </div>
           </div>

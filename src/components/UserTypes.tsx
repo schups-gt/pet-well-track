@@ -46,7 +46,7 @@ const UserTypes = () => {
             <CardContent className="space-y-6">
               <div className="space-y-4">
                 <div className="flex items-start gap-3">
-                  <Monitor className="w-5 h-5 text-health-green mt-1" />
+                  <Monitor className="w-5 h-5 text-health-pink mt-1" />
                   <div>
                     <h4 className="font-semibold text-foreground">Dashboard Intuitivo</h4>
                     <p className="text-muted-foreground text-sm">
@@ -103,7 +103,7 @@ const UserTypes = () => {
             <CardContent className="space-y-6">
               <div className="space-y-4">
                 <div className="flex items-start gap-3">
-                  <BarChart3 className="w-5 h-5 text-health-green mt-1" />
+                  <BarChart3 className="w-5 h-5 text-health-pink mt-1" />
                   <div>
                     <h4 className="font-semibold text-foreground">Painel de Gestão</h4>
                     <p className="text-muted-foreground text-sm">

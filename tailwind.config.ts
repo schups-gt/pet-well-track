@@ -48,8 +48,8 @@ export default {
           foreground: "hsl(var(--card-foreground))",
         },
         health: {
-          green: "hsl(var(--health-green))",
-          "green-light": "hsl(var(--health-green-light))",
+          pink: "hsl(var(--health-pink))",
+          "pink-light": "hsl(var(--health-pink-light))",
           blue: "hsl(var(--health-blue))",
           "blue-light": "hsl(var(--health-blue-light))",
         },

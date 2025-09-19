@@ -16,7 +16,7 @@ const buttonVariants = cva(
         ghost: "hover:bg-accent hover:text-accent-foreground",
         link: "text-primary underline-offset-4 hover:underline",
         hero: "bg-health-gradient text-white hover:scale-105 shadow-card transition-all duration-300 font-semibold",
-        health: "bg-health-green text-white hover:bg-health-green/90 shadow-soft",
+        health: "bg-health-pink text-white hover:bg-health-pink/90 shadow-soft",
         accent: "bg-accent text-accent-foreground hover:bg-accent/90 shadow-soft",
       },
       size: {

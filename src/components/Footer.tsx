@@ -60,7 +60,7 @@ const Footer = () => {
             <h3 className="font-semibold text-lg">Contato</h3>
             <div className="space-y-3 text-sm">
               <div className="flex items-center gap-2">
-                <Mail className="w-4 h-4 text-health-green" />
+                <Mail className="w-4 h-4 text-health-pink" />
                 <span className="text-background/80">contato@pethealth.com.br</span>
               </div>
               <div className="flex items-center gap-2">

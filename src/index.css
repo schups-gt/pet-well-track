@@ -17,16 +17,16 @@ All colors MUST be HSL.
     --popover: 0 0% 100%;
     --popover-foreground: 210 50% 15%;
 
-    --primary: 142 76% 36%;
+    --primary: 320 65% 52%;
     --primary-foreground: 0 0% 98%;
 
-    --secondary: 195 100% 95%;
+    --secondary: 200 100% 95%;
     --secondary-foreground: 210 50% 25%;
 
     --muted: 210 40% 96%;
     --muted-foreground: 210 25% 45%;
 
-    --accent: 201 96% 32%;
+    --accent: 200 85% 70%;
     --accent-foreground: 0 0% 98%;
 
     --destructive: 0 84% 60%;
@@ -34,20 +34,20 @@ All colors MUST be HSL.
 
     --border: 210 40% 90%;
     --input: 210 40% 90%;
-    --ring: 142 76% 36%;
+    --ring: 320 65% 52%;
 
     --radius: 0.75rem;
 
-    /* Pet Health Theme Colors */
-    --health-green: 142 76% 36%;
-    --health-green-light: 142 76% 85%;
-    --health-blue: 201 96% 32%;
-    --health-blue-light: 201 96% 85%;
-    --health-gradient: linear-gradient(135deg, hsl(var(--health-green)), hsl(var(--health-blue)));
-    --health-gradient-soft: linear-gradient(135deg, hsl(var(--health-green-light)), hsl(var(--health-blue-light)));
+    /* Pet Health Theme Colors - Rosa e Azul Bebê */
+    --health-pink: 320 65% 52%;
+    --health-pink-light: 320 65% 85%;
+    --health-blue: 200 85% 70%;
+    --health-blue-light: 200 85% 88%;
+    --health-gradient: linear-gradient(135deg, hsl(var(--health-pink)), hsl(var(--health-blue)));
+    --health-gradient-soft: linear-gradient(135deg, hsl(var(--health-pink-light)), hsl(var(--health-blue-light)));
 
     /* Shadows */
-    --shadow-soft: 0 4px 20px -4px hsl(var(--health-green) / 0.1);
+    --shadow-soft: 0 4px 20px -4px hsl(var(--health-pink) / 0.1);
     --shadow-card: 0 8px 30px -8px hsl(var(--health-blue) / 0.15);
 
     /* Animations */
@@ -80,7 +80,7 @@ All colors MUST be HSL.
     --popover: 210 50% 8%;
     --popover-foreground: 210 40% 98%;
 
-    --primary: 142 76% 45%;
+    --primary: 320 65% 60%;
     --primary-foreground: 210 50% 6%;
 
     --secondary: 210 50% 12%;
@@ -89,7 +89,7 @@ All colors MUST be HSL.
     --muted: 210 50% 12%;
     --muted-foreground: 210 25% 65%;
 
-    --accent: 201 96% 45%;
+    --accent: 200 85% 75%;
     --accent-foreground: 210 50% 6%;
 
     --destructive: 0 84% 60%;
@@ -97,16 +97,16 @@ All colors MUST be HSL.
 
     --border: 210 50% 15%;
     --input: 210 50% 15%;
-    --ring: 142 76% 45%;
+    --ring: 320 65% 60%;
 
-    --health-green: 142 76% 45%;
-    --health-green-light: 142 76% 25%;
-    --health-blue: 201 96% 45%;
-    --health-blue-light: 201 96% 25%;
-    --health-gradient: linear-gradient(135deg, hsl(var(--health-green)), hsl(var(--health-blue)));
-    --health-gradient-soft: linear-gradient(135deg, hsl(var(--health-green-light)), hsl(var(--health-blue-light)));
+    --health-pink: 320 65% 60%;
+    --health-pink-light: 320 65% 25%;
+    --health-blue: 200 85% 75%;
+    --health-blue-light: 200 85% 25%;
+    --health-gradient: linear-gradient(135deg, hsl(var(--health-pink)), hsl(var(--health-blue)));
+    --health-gradient-soft: linear-gradient(135deg, hsl(var(--health-pink-light)), hsl(var(--health-blue-light)));
 
-    --shadow-soft: 0 4px 20px -4px hsl(var(--health-green) / 0.2);
+    --shadow-soft: 0 4px 20px -4px hsl(var(--health-pink) / 0.2);
     --shadow-card: 0 8px 30px -8px hsl(var(--health-blue) / 0.3);
     --sidebar-background: 240 5.9% 10%;
     --sidebar-foreground: 240 4.8% 95.9%;

@@ -13,7 +13,7 @@ const features = [
     icon: Activity,
     title: "Monitoramento em Tempo Real",
     description: "Acompanhe os sinais vitais e atividades do seu pet 24 horas por dia com sensores inteligentes.",
-    color: "text-health-green"
+    color: "text-health-pink"
   },
   {
     icon: Calendar,
@@ -37,7 +37,7 @@ const features = [
     icon: Smartphone,
     title: "App Mobile",
     description: "Acesse todas as funcionalidades através do nosso aplicativo mobile intuitivo e responsivo.",
-    color: "text-health-green"
+    color: "text-health-pink"
   },
   {
     icon: Users,
