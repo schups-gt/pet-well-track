@@ -1,5 +1,7 @@
 import { Heart, Menu } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+// 1. IMPORTAÇÃO ESSENCIAL: Adicionamos o 'Link' do React Router
+import { Link } from 'react-router-dom';
 
 const Header = () => {
   return (
@@ -13,21 +15,23 @@ const Header = () => {
         </div>
         
         <nav className="hidden md:flex items-center gap-8">
-          <a href="#" className="text-muted-foreground hover:text-foreground transition-colors">
+          {/* 2. CORREÇÃO: Usamos Link to="/" em vez de a href="#" */}
+          <Link to="/" className="text-muted-foreground hover:text-foreground transition-colors">
             Início
-          </a>
-          <a href="#" className="text-muted-foreground hover:text-foreground transition-colors">
-            Funcionalidades
-          </a>
-          <a href="#" className="text-muted-foreground hover:text-foreground transition-colors">
-            Para Tutores
-          </a>
-          <a href="#" className="text-muted-foreground hover:text-foreground transition-colors">
-            Para Veterinários
-          </a>
-          <a href="#" className="text-muted-foreground hover:text-foreground transition-colors">
+          </Link>
+          {/* Outros links corrigidos, mas ainda sem rota definida */}
+          <Link to="/serviços" className="text-muted-foreground hover:text-foreground transition-colors">
+            Serviços
+          </Link>
+          <Link to="/meuspets" className="text-muted-foreground hover:text-foreground transition-colors">
+            Meus Pets
+          </Link>
+          <Link to="/contato" className="text-muted-foreground hover:text-foreground transition-colors">
             Contato
-          </a>
+          </Link>
+          <Link to="/nossaequipe" className="text-muted-foreground hover:text-foreground transition-colors">
+            Nossa Equipe
+          </Link>
         </nav>
 
         <div className="flex items-center gap-4">
