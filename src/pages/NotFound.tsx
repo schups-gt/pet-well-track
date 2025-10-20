@@ -1,24 +1,30 @@
-import { useLocation } from "react-router-dom";
-import { useEffect } from "react";
+import React, { useState } from "react";
+import api from "../lib/api";
 
-const NotFound = () => {
-  const location = useLocation();
+const Registrar = () => {
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [senha, setSenha] = useState("");
 
-  useEffect(() => {
-    console.error("404 Error: User attempted to access non-existent route:", location.pathname);
-  }, [location.pathname]);
+  const handleRegister = async (e: React.FormEvent) => {
+    e.preventDefault();
+    try {
+      const res = await api.post("/register", { name, email, password: senha });
+      alert("Registrado com sucesso!");
+      console.log(res.data);
+    } catch (err: any) {
+      alert(err.response?.data?.error || "Erro ao registrar");
+    }
+  };
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-gray-100">
-      <div className="text-center">
-        <h1 className="mb-4 text-4xl font-bold">404</h1>
-        <p className="mb-4 text-xl text-gray-600">Oops! Page not found</p>
-        <a href="/" className="text-blue-500 underline hover:text-blue-700">
-          Return to Home
-        </a>
-      </div>
-    </div>
+    <form onSubmit={handleRegister}>
+      <input value={name} onChange={e => setName(e.target.value)} placeholder="Nome" required />
+      <input type="email" value={email} onChange={e => setEmail(e.target.value)} placeholder="Email" required />
+      <input type="password" value={senha} onChange={e => setSenha(e.target.value)} placeholder="Senha" required />
+      <button type="submit">Registrar</button>
+    </form>
   );
 };
 
-export default NotFound;
+export default Registrar;
