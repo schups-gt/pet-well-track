@@ -15,7 +15,6 @@ const Header = () => {
         </div>
         
         <nav className="hidden md:flex items-center gap-8">
-          {/* 2. CORREÇÃO: Usamos Link to="/" em vez de a href="#" */}
           <Link to="/" className="text-muted-foreground hover:text-foreground transition-colors">
             Início
           </Link>
@@ -35,9 +34,9 @@ const Header = () => {
         </nav>
 
         <div className="flex items-center gap-4">
-          <Button variant="ghost" className="hidden md:inline-flex">
+          <Link to="/entrar" className="hidden md:inline-flex">
             Entrar
-          </Button>
+          </Link>
           <Button variant="hero">
             Acessar Plataforma
           </Button>
