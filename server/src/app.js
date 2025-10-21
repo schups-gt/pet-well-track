@@ -1,5 +1,6 @@
 // src/app.js
 import express from "express";
+import cookieParser from 'cookie-parser';
 import cors from "cors";
 import morgan from "morgan";
 import session from "express-session";
@@ -20,6 +21,9 @@ app.use(cors({
 }));
 
 app.use(express.json());
+
+//app.use(cookieParser()); -> Para quando estiver com o banco de dados
+
 app.use(morgan("dev"));
 
 // Sessão

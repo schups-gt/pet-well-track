@@ -1,7 +1,11 @@
+import jwt from 'jsonwebtoken';
 import bcrypt from "bcryptjs";
 import crypto from "crypto";
 import nodemailer from "nodemailer";
 import { findUserByEmail, createUser, findUserById, updateUserToken } from "../services/user.service.js";
+const SECRET = process.env.JWT_SECRET;
+const EXPIRES_IN = process.env.JWT_EXPIRES_IN || '1h';
+const COOKIE_NAME = process.env.COOKIE_NAME || 'token';
 
 export async function registerController(req, res, next) {
   try {
@@ -109,3 +113,33 @@ export async function meController(req, res, next) {
     next(err);
   }
 }
+
+//Para quando utilizar banco de dados
+/*
+export async function login(req, res) {
+  const { email, password } = req.body;
+  if (!email || !password) return res.status(400).json({ message: 'Email e senha são obrigatórios' });
+
+  const user = await userService.findByEmail(email); // adapte
+  if (!user) return res.status(401).json({ message: 'Credenciais inválidas' });
+
+  const valid = await bcrypt.compare(password, user.password);
+  if (!valid) return res.status(401).json({ message: 'Credenciais inválidas' });
+
+  const payload = { sub: user.id, roles: user.roles || [] };
+  const token = jwt.sign(payload, SECRET, { expiresIn: EXPIRES_IN });
+
+  res.cookie(COOKIE_NAME, token, {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production',
+    sameSite: 'lax',
+    maxAge: 1000 * 60 * 60 // 1h, ou ajuste
+  });
+   const { password: _pwd, ...userSafe } = user;
+  res.json({ user: userSafe });
+}
+
+export function logout(req, res) {
+  res.clearCookie(COOKIE_NAME, { httpOnly: true, sameSite: 'lax', secure: process.env.NODE_ENV === 'production' });
+  res.json({ message: 'Desconectado' });
+}*/
