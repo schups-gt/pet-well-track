@@ -2,7 +2,7 @@ import jwt from 'jsonwebtoken';
 import bcrypt from "bcryptjs";
 import crypto from "crypto";
 import nodemailer from "nodemailer";
-import { findUserByEmail, createUser, findUserById, updateUserToken } from "../services/user.service.js";
+import { findUserByEmail, createUser, findUserById, updateUserToken, findUserByResetToken, updateUserPassword } from "../services/user.service.js";
 const SECRET = process.env.JWT_SECRET;
 const EXPIRES_IN = process.env.JWT_EXPIRES_IN || '1h';
 const COOKIE_NAME = process.env.COOKIE_NAME || 'token';
@@ -37,13 +37,15 @@ export async function registerController(req, res, next) {
 
 
 export async function resetPasswordController(req, res, next) {
-  console.log("Reset de senha solicitado para:", req.body.email);
   try {
     const { email } = req.body;
-    const user = await findUserByEmail(email);
+    console.log("Redefinição de senha solicitada para:", email);
 
-    // Não vaza se o email existe ou não
-    if (!user) return res.json({ success: true });
+    const user = await findUserByEmail(email);
+    if (!user) {
+      console.log("Nenhum usuário com esse email (ok).");
+      return res.json({ success: true });
+    }
 
     // Gera token temporário
     const token = crypto.randomBytes(32).toString("hex");
@@ -52,12 +54,37 @@ export async function resetPasswordController(req, res, next) {
     // Salva token no usuário
     await updateUserToken(user.id, token, expires);
 
-    // Apenas mostra o link no console (não envia email de verdade)
-    const resetLink = `http://localhost:8080/redefinir-senha/${token}`;
-    console.log(`Link de redefinição para ${email}: ${resetLink}`);
+    // Imprime token e link no console
+    console.log(`Token gerado para ${email}: ${token}`);
+    console.log(`Link de redefinição: http://localhost:8080/redefinir-senha/${token}`);
 
     return res.json({ success: true });
   } catch (err) {
+    console.error("Erro em resetPasswordController:", err);
+    next(err);
+  }
+}
+
+export async function resetPasswordConfirmController(req, res, next) {
+  try {
+    const { token } = req.params;
+    const { newPassword } = req.body;
+
+    if (!token || !newPassword)
+      return res.status(400).json({ success: false, error: "Token e nova senha são obrigatórios" });
+
+    const user = await findUserByResetToken(token);
+    if (!user) {
+      return res.status(400).json({ success: false, error: "Token inválido ou expirado" });
+    }
+
+    const password_hash = await bcrypt.hash(newPassword, 10);
+    await updateUserPassword(user.id, password_hash);
+
+    console.log(`Senha redefinida com sucesso para ${user.email}`);
+    return res.json({ success: true, message: "Senha redefinida com sucesso!" });
+  } catch (err) {
+    console.error("Erro em resetPasswordConfirmController:", err);
     next(err);
   }
 }

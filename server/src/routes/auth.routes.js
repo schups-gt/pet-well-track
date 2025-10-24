@@ -4,9 +4,13 @@ import {
   registerController,
   loginController,
   logoutController,
-  meController
+  meController,
+  resetPasswordConfirmController
 } from "../controllers/auth.controller.js";
 import { authGuard } from "../middleware/authGuard.js";
+const API_URL = "http://localhost:3000";
+
+
 
 /* -> Para quando for usar com banco de dados
 export default function authGuard(req, res, next) {
@@ -29,6 +33,7 @@ const router = Router();
 
 router.post("/register", registerController);
 router.post("/reset", resetPasswordController);
+router.post("/reset-password/:token", resetPasswordConfirmController);
 router.post("/login", loginController);
 router.post("/logout", logoutController);
 router.get("/me", authGuard, meController);
