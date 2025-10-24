@@ -1,0 +1,130 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
+All colors MUST be HSL.
+*/
+
+@layer base {
+  :root {
+    --background: 210 50% 98%;
+    --foreground: 210 50% 15%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 210 50% 15%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 210 50% 15%;
+
+    --primary: 320 65% 52%;
+    --primary-foreground: 0 0% 98%;
+
+    --secondary: 200 100% 95%;
+    --secondary-foreground: 210 50% 25%;
+
+    --muted: 210 40% 96%;
+    --muted-foreground: 210 25% 45%;
+
+    --accent: 200 85% 70%;
+    --accent-foreground: 0 0% 98%;
+
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 98%;
+
+    --border: 210 40% 90%;
+    --input: 210 40% 90%;
+    --ring: 320 65% 52%;
+
+    --radius: 0.75rem;
+
+    /* Pet Health Theme Colors - Rosa e Azul Bebê */
+    --health-pink: 320 65% 52%;
+    --health-pink-light: 320 65% 85%;
+    --health-blue: 200 85% 70%;
+    --health-blue-light: 200 85% 88%;
+    --health-gradient: linear-gradient(135deg, hsl(var(--health-pink)), hsl(var(--health-blue)));
+    --health-gradient-soft: linear-gradient(135deg, hsl(var(--health-pink-light)), hsl(var(--health-blue-light)));
+
+    /* Shadows */
+    --shadow-soft: 0 4px 20px -4px hsl(var(--health-pink) / 0.1);
+    --shadow-card: 0 8px 30px -8px hsl(var(--health-blue) / 0.15);
+
+    /* Animations */
+    --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+
+    --sidebar-background: 0 0% 98%;
+
+    --sidebar-foreground: 240 5.3% 26.1%;
+
+    --sidebar-primary: 240 5.9% 10%;
+
+    --sidebar-primary-foreground: 0 0% 98%;
+
+    --sidebar-accent: 240 4.8% 95.9%;
+
+    --sidebar-accent-foreground: 240 5.9% 10%;
+
+    --sidebar-border: 220 13% 91%;
+
+    --sidebar-ring: 217.2 91.2% 59.8%;
+  }
+
+  .dark {
+    --background: 210 50% 6%;
+    --foreground: 210 40% 98%;
+
+    --card: 210 50% 8%;
+    --card-foreground: 210 40% 98%;
+
+    --popover: 210 50% 8%;
+    --popover-foreground: 210 40% 98%;
+
+    --primary: 320 65% 60%;
+    --primary-foreground: 210 50% 6%;
+
+    --secondary: 210 50% 12%;
+    --secondary-foreground: 210 40% 98%;
+
+    --muted: 210 50% 12%;
+    --muted-foreground: 210 25% 65%;
+
+    --accent: 200 85% 75%;
+    --accent-foreground: 210 50% 6%;
+
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 210 40% 98%;
+
+    --border: 210 50% 15%;
+    --input: 210 50% 15%;
+    --ring: 320 65% 60%;
+
+    --health-pink: 320 65% 60%;
+    --health-pink-light: 320 65% 25%;
+    --health-blue: 200 85% 75%;
+    --health-blue-light: 200 85% 25%;
+    --health-gradient: linear-gradient(135deg, hsl(var(--health-pink)), hsl(var(--health-blue)));
+    --health-gradient-soft: linear-gradient(135deg, hsl(var(--health-pink-light)), hsl(var(--health-blue-light)));
+
+    --shadow-soft: 0 4px 20px -4px hsl(var(--health-pink) / 0.2);
+    --shadow-card: 0 8px 30px -8px hsl(var(--health-blue) / 0.3);
+    --sidebar-background: 240 5.9% 10%;
+    --sidebar-foreground: 240 4.8% 95.9%;
+    --sidebar-primary: 224.3 76.3% 48%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 240 3.7% 15.9%;
+    --sidebar-accent-foreground: 240 4.8% 95.9%;
+    --sidebar-border: 240 3.7% 15.9%;
+    --sidebar-ring: 217.2 91.2% 59.8%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+  }
+}
