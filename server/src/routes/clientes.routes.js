@@ -9,6 +9,7 @@ import {
 } from "../controllers/clientes.controller.js";
 
 const router = Router();
+router.use(verifyJWT);
 
 router.use(verifyJWT);
 router.get("/", listController);          // GET /api/clientes?search=
