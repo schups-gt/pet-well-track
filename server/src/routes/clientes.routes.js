@@ -11,6 +11,7 @@ import {
 const router = Router();
 router.use(verifyJWT);
 
+router.use(verifyJWT);
 router.get("/", listController);          // GET /api/clientes?search=
 router.get("/:id", getByIdController);    // GET /api/clientes/:id
 router.post("/", createController);       // POST /api/clientes

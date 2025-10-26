@@ -10,7 +10,7 @@ import {
 //import authGuard from '../middleware/authGuard.js'; -> Para quando for usar com banco de dados
 const router = Router();
 
-router.use(verifyJWT);
+router.use(verifyJWT); 
 
 router.get("/", listController);          // GET /api/servicos?search=
 router.get("/:id", getByIdController);    // GET /api/servicos/:id
