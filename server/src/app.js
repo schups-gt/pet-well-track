@@ -1,10 +1,10 @@
 // src/app.js
 import express from "express";
-import cookieParser from 'cookie-parser';
 import cors from "cors";
 import morgan from "morgan";
-import session from "express-session";
 import dotenv from "dotenv";
+import 'dotenv/config'; 
+
 
 import authRoutes from "./routes/auth.routes.js";
 import clientesRoutes from "./routes/clientes.routes.js";
@@ -25,19 +25,6 @@ app.use(express.json());
 //app.use(cookieParser()); -> Para quando estiver com o banco de dados
 
 app.use(morgan("dev"));
-
-// Sessão
-app.use(session({
-  secret: process.env.SESSION_SECRET || "dev_secret",
-  resave: false,
-  saveUninitialized: false,
-  cookie: {
-    httpOnly: true,
-    secure: false,
-    sameSite: "lax",
-    maxAge: 1000 * 60 * 60 * 2, // 2h
-  },
-}));
 
 // Healthcheck
 app.get("/ping", (req, res) => {

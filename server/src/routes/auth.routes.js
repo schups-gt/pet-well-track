@@ -1,14 +1,30 @@
+// server/src/routes/auth.routes.js
 import { Router } from "express";
-import { resetPasswordController } from "../controllers/auth.controller.js";
 import {
   registerController,
   loginController,
   logoutController,
   meController,
-  resetPasswordConfirmController
+  resetPasswordController,
+  resetPasswordConfirmController,
 } from "../controllers/auth.controller.js";
-import { authGuard } from "../middleware/authGuard.js";
-const API_URL = "http://localhost:3000";
+import { verifyJWT } from "../middleware/verifyJWT.js"; // JWT
+
+const router = Router();
+
+// públicas
+router.post("/register", registerController);
+router.post("/login", loginController);
+router.post("/reset", resetPasswordController);
+router.post("/reset-password/:token", resetPasswordConfirmController);
+
+// “logout” stateless (só 204)
+router.post("/logout", logoutController);
+
+// protegida por JWT
+router.get("/me", verifyJWT, meController); // trocado
+
+export default router;
 
 
 
@@ -28,14 +44,3 @@ export default function authGuard(req, res, next) {
 }
 */
 
-
-const router = Router();
-
-router.post("/register", registerController);
-router.post("/reset", resetPasswordController);
-router.post("/reset-password/:token", resetPasswordConfirmController);
-router.post("/login", loginController);
-router.post("/logout", logoutController);
-router.get("/me", authGuard, meController);
-
-export default router;

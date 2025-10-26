@@ -1,18 +1,30 @@
-import jwt from 'jsonwebtoken';
+// server/src/controllers/auth.controller.js
+import jwt from "jsonwebtoken";
 import bcrypt from "bcryptjs";
 import crypto from "crypto";
-import nodemailer from "nodemailer";
-import { findUserByEmail, createUser, findUserById, updateUserToken, findUserByResetToken, updateUserPassword } from "../services/user.service.js";
-const SECRET = process.env.JWT_SECRET;
-const EXPIRES_IN = process.env.JWT_EXPIRES_IN || '1h';
-const COOKIE_NAME = process.env.COOKIE_NAME || 'token';
+// import nodemailer from "nodemailer"; // deixe comentado se não for usar agora
 
+import {
+  findUserByEmail,
+  createUser,
+  findUserById,
+  updateUserToken,
+  findUserByResetToken,
+  updateUserPassword
+} from "../services/user.service.js";
+
+const SECRET = process.env.JWT_SECRET;
+const EXPIRES_IN = process.env.JWT_EXPIRES_IN || "2h";
+
+// REGISTER -> cria usuário e já retorna JWT
 export async function registerController(req, res, next) {
   try {
     const { email, password, name } = req.body;
 
     if (!email || !password || !name) {
-      return res.status(400).json({ success: false, error: "Campos obrigatórios: name, email, password" });
+      return res
+        .status(400)
+        .json({ success: false, error: "Campos obrigatórios: name, email, password" });
     }
 
     const exists = await findUserByEmail(email);
@@ -23,73 +35,19 @@ export async function registerController(req, res, next) {
     const password_hash = await bcrypt.hash(password, 10);
     const user = await createUser({ email, name, password_hash });
 
-    // cria sessão
-    req.session.userId = user.id;
+    const token = jwt.sign({ userId: user.id }, SECRET, { expiresIn: EXPIRES_IN });
 
     return res.status(201).json({
       success: true,
-      data: { id: user.id, name: user.name, email: user.email }
+      data: { id: user.id, name: user.name, email: user.email },
+      token
     });
   } catch (err) {
     next(err);
   }
 }
 
-
-export async function resetPasswordController(req, res, next) {
-  try {
-    const { email } = req.body;
-    console.log("Redefinição de senha solicitada para:", email);
-
-    const user = await findUserByEmail(email);
-    if (!user) {
-      console.log("Nenhum usuário com esse email (ok).");
-      return res.json({ success: true });
-    }
-
-    // Gera token temporário
-    const token = crypto.randomBytes(32).toString("hex");
-    const expires = Date.now() + 1000 * 60 * 60; // 1 hora
-
-    // Salva token no usuário
-    await updateUserToken(user.id, token, expires);
-
-    // Imprime token e link no console
-    console.log(`Token gerado para ${email}: ${token}`);
-    console.log(`Link de redefinição: http://localhost:8080/redefinir-senha/${token}`);
-
-    return res.json({ success: true });
-  } catch (err) {
-    console.error("Erro em resetPasswordController:", err);
-    next(err);
-  }
-}
-
-export async function resetPasswordConfirmController(req, res, next) {
-  try {
-    const { token } = req.params;
-    const { newPassword } = req.body;
-
-    if (!token || !newPassword)
-      return res.status(400).json({ success: false, error: "Token e nova senha são obrigatórios" });
-
-    const user = await findUserByResetToken(token);
-    if (!user) {
-      return res.status(400).json({ success: false, error: "Token inválido ou expirado" });
-    }
-
-    const password_hash = await bcrypt.hash(newPassword, 10);
-    await updateUserPassword(user.id, password_hash);
-
-    console.log(`Senha redefinida com sucesso para ${user.email}`);
-    return res.json({ success: true, message: "Senha redefinida com sucesso!" });
-  } catch (err) {
-    console.error("Erro em resetPasswordConfirmController:", err);
-    next(err);
-  }
-}
-
-
+// LOGIN -> valida credenciais e retorna JWT
 export async function loginController(req, res, next) {
   try {
     const { email, password } = req.body;
@@ -108,30 +66,30 @@ export async function loginController(req, res, next) {
       return res.status(401).json({ success: false, error: "Credenciais inválidas" });
     }
 
-    req.session.userId = user.id;
+    const token = jwt.sign({ userId: user.id }, SECRET, { expiresIn: EXPIRES_IN });
 
     return res.json({
       success: true,
-      data: { id: user.id, name: user.name, email: user.email }
+      data: { id: user.id, name: user.name, email: user.email },
+      token
     });
   } catch (err) {
     next(err);
   }
 }
 
-export async function logoutController(req, res, next) {
-  try {
-    req.session.destroy(() => {});
-    res.clearCookie("connect.sid");
-    return res.status(204).end();
-  } catch (err) {
-    next(err);
-  }
+// LOGOUT -> com JWT stateless basta o front descartar o token
+export async function logoutController(_req, res, _next) {
+  return res.status(204).end();
 }
 
+// ME -> requer verifyJWT para preencher req.userId
 export async function meController(req, res, next) {
   try {
-    const user = await findUserById(req.session.userId);
+    const user = await findUserById(req.userId);
+    if (!user) {
+      return res.status(404).json({ success: false, error: "Usuário não encontrado" });
+    }
     return res.json({
       success: true,
       data: { id: user.id, name: user.name, email: user.email }
@@ -140,6 +98,53 @@ export async function meController(req, res, next) {
     next(err);
   }
 }
+
+// RESET DE SENHA (fluxo por token próprio, independente do JWT)
+export async function resetPasswordController(req, res, next) {
+  try {
+    const { email } = req.body;
+    const user = await findUserByEmail(email);
+    if (!user) return res.json({ success: true });
+
+    const token = crypto.randomBytes(32).toString("hex");
+    const expires = Date.now() + 1000 * 60 * 60; // 1 hora
+    await updateUserToken(user.id, token, expires);
+
+    console.log(`Token gerado para ${email}: ${token}`);
+    console.log(`Link de redefinição: http://localhost:8080/redefinir-senha/${token}`);
+
+    return res.json({ success: true });
+  } catch (err) {
+    next(err);
+  }
+}
+
+export async function resetPasswordConfirmController(req, res, next) {
+  try {
+    const { token } = req.params;
+    const { newPassword } = req.body;
+
+    if (!token || !newPassword) {
+      return res
+        .status(400)
+        .json({ success: false, error: "Token e nova senha são obrigatórios" });
+    }
+
+    const user = await findUserByResetToken(token);
+    if (!user) {
+      return res.status(400).json({ success: false, error: "Token inválido ou expirado" });
+    }
+
+    const password_hash = await bcrypt.hash(newPassword, 10);
+    await updateUserPassword(user.id, password_hash);
+
+    return res.json({ success: true, message: "Senha redefinida com sucesso!" });
+  } catch (err) {
+    next(err);
+  }
+}
+
+
 
 //Para quando utilizar banco de dados
 /*
