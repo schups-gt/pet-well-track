@@ -10,6 +10,7 @@ import authRoutes from "./routes/auth.routes.js";
 import clientesRoutes from "./routes/clientes.routes.js";
 import servicosRoutes from "./routes/servicos.routes.js";
 import agendamentosRoutes from "./routes/agendamentos.routes.js";
+import petsRoutes from "./routes/pets.routes.js";
 import { errorHandler } from "./middleware/errorHandler.js";
 
 dotenv.config();
@@ -22,6 +23,8 @@ app.use(cors({
 }));
 
 app.use(express.json());
+app.use(morgan("dev"));
+app.use("/api/pets", petsRoutes);
 app.use(cookieParser());
 
 app.use(morgan("dev"));
