@@ -23,7 +23,7 @@ function validateCreate(body) {
 
 export async function listController(req, res, next) {
   try {
-    const ownerId = req.session.userId;
+    const ownerId = req.userId;
     const { from, to } = req.query;
     const data = await listAgendamentos({ ownerId, from, to });
     return res.json({ success: true, data });
@@ -32,7 +32,7 @@ export async function listController(req, res, next) {
 
 export async function getByIdController(req, res, next) {
   try {
-    const ownerId = req.session.userId;
+    const ownerId = req.userId;
     const id = Number(req.params.id);
     if (Number.isNaN(id)) return res.status(400).json({ success:false, error:"ID inválido" });
 
@@ -45,7 +45,7 @@ export async function getByIdController(req, res, next) {
 
 export async function createController(req, res, next) {
   try {
-    const ownerId = req.session.userId;
+    const ownerId = req.userId;
     const err = validateCreate(req.body);
     if (err) return res.status(400).json({ success:false, error: err });
 
@@ -75,7 +75,7 @@ export async function createController(req, res, next) {
 
 export async function updateController(req, res, next) {
   try {
-    const ownerId = req.session.userId;
+    const ownerId = req.userId;
     const id = Number(req.params.id);
     if (Number.isNaN(id)) return res.status(400).json({ success:false, error:"ID inválido" });
 
@@ -95,7 +95,7 @@ export async function updateController(req, res, next) {
 
 export async function deleteController(req, res, next) {
   try {
-    const ownerId = req.session.userId;
+    const ownerId = req.userId;
     const id = Number(req.params.id);
     if (Number.isNaN(id)) return res.status(400).json({ success:false, error:"ID inválido" });
 

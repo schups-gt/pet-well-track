@@ -1,61 +1,56 @@
-// storage em memória para AGENDAMENTOS
-let _agdId = 1;
-const agendamentos = []; 
-// { id, ownerId, cliente_id, servico_id, data_hora, status, observacoes, criadoEm }]
+import { db } from "../database/sqlite.js";
 
 export async function listAgendamentos({ ownerId, from, to }) {
-    let data = agendamentos.filter(a => a.ownerId === ownerId);
-    if (from) data = data.filter(a => new Date9a.data_hora) >= new Date(from);
-    if (to) data = data.filter(a => new Date(a.data_hora) <= new Date(to));
-    data.sort((a, b) => new Date(a.data_hora) - new Date(b.data_hora));
-    return data;
-}  
+  if (from && to) {
+    return db.prepare(`
+      SELECT * FROM agendamentos
+      WHERE owner_id = ? AND data_hora BETWEEN ? AND ? ORDER BY data_hora ASC
+    `).all(ownerId, from, to);
+  }
+  return db.prepare(`SELECT * FROM agendamentos WHERE owner_id = ? ORDER BY data_hora ASC`).all(ownerId);
+}
 
 export async function getAgendamentoById({ ownerId, id }) {
-    return agendamentos.find(a => a.ownerId === ownerId && a.id === id) || null;
+  return db.prepare(`SELECT * FROM agendamentos WHERE owner_id=? AND id=?`).get(ownerId, id) || null;
 }
 
 export async function createAgendamento({ ownerId, cliente_id, servico_id, data_hora, observacoes }) {
-  const novo = {
-    id: _agdId++,
-    ownerId,
-    cliente_id,
-    servico_id,
-    data_hora,               // ISO string
-    status: "marcado",       // marcado | concluido | cancelado
-    observacoes: observacoes || null,
-    criadoEm: new Date().toISOString()
-  };
-  agendamentos.push(novo);
-  return novo;
+  // conflito: mesmo cliente na mesma data/hora
+  const exists = db.prepare(`
+    SELECT 1 FROM agendamentos WHERE owner_id=? AND cliente_id=? AND data_hora=? LIMIT 1
+  `).get(ownerId, cliente_id, data_hora);
+  if (exists) return { conflict: true };
+
+  const info = db.prepare(`
+    INSERT INTO agendamentos (owner_id, cliente_id, servico_id, data_hora, observacoes)
+    VALUES (?, ?, ?, ?, ?)
+  `).run(ownerId, cliente_id, servico_id, data_hora, observacoes || null);
+  return getAgendamentoById({ ownerId, id: Number(info.lastInsertRowid) });
 }
 
-export async function updateAgendamento({ ownerId, id, data_hora, status, observacoes }) {
-  const idx = agendamentos.findIndex(a => a.ownerId === ownerId && a.id === id);
-  if (idx === -1) return null;
-  const atual = agendamentos[idx];
-  const upd = {
-    ...atual,
-    data_hora: data_hora ?? atual.data_hora,
-    status: status ?? atual.status,
-    observacoes: observacoes ?? atual.observacoes
-  };
-  agendamentos[idx] = upd;
-  return upd;
+export async function updateAgendamento({ ownerId, id, status, observacoes }) {
+  const cur = await getAgendamentoById({ ownerId, id });
+  if (!cur) return null;
+  db.prepare(`
+    UPDATE agendamentos SET status=?, observacoes=? WHERE owner_id=? AND id=?
+  `).run(status ?? cur.status, observacoes ?? cur.observacoes, ownerId, id);
+  return getAgendamentoById({ ownerId, id });
 }
 
 export async function deleteAgendamento({ ownerId, id }) {
-  const idx = agendamentos.findIndex(a => a.ownerId === ownerId && a.id === id);
-  if (idx === -1) return false;
-  agendamentos.splice(idx, 1);
-  return true;
+  const info = db.prepare(`DELETE FROM agendamentos WHERE owner_id=? AND id=?`).run(ownerId, id);
+  return info.changes > 0;
 }
 
-// Regra simples: impede dois agendamentos no MESMO horário para o MESMO cliente
 export async function hasConflito({ ownerId, cliente_id, data_hora }) {
-  return agendamentos.some(a =>
-    a.ownerId === ownerId &&
-    a.cliente_id === cliente_id &&
-    a.data_hora === data_hora
-  );
+  // verifica se já existe agendamento para o mesmo cliente no mesmo horário
+  const row = dbs.agendamento.prepare(`
+    SELECT 1
+    FROM agendamentos
+    WHERE owner_id = ?
+      AND cliente_id = ?
+      AND data_hora = ?
+    LIMIT 1
+  `).get(ownerId, cliente_id, data_hora);
+  return !!row; // true = conflitou
 }

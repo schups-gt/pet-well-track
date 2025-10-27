@@ -27,7 +27,7 @@ const App = () => (
         <Routes>
           <Route path="/" element={<Index />} />
           {/* MOVEMOS O CONTATO PARA CIMA! */}
-          <Route path="/" element={<Entrar />} />
+          <Route path="/Entrar" element={<Entrar />} />
           <Route path="/registrar" element={<Registrar />} />
           <Route path="/esqueci-senha" element={<EsqueciSenha />} />
           <Route path="/serviços" element={<Serviços />} />
@@ -35,7 +35,6 @@ const App = () => (
           <Route path="/cadastro-pet" element={<CadastrarPet />} />
           <Route path="/nossaequipe" element={<NossaEquipe />} />
           <Route path="/contato" element={<Contato />} />
-          <Route path="/entrar" element={<Entrar />} />
           <Route path="/redefinir-senha/:token" element={<ResetarSenha />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
