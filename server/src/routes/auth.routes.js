@@ -8,7 +8,7 @@ import {
   resetPasswordController,
   resetPasswordConfirmController,
 } from "../controllers/auth.controller.js";
-import { verifyJWT } from "../middleware/verifyJWT.js"; // ✅ JWT
+import { verifyJWT } from "../middleware/verifyJWT.js"; // JWT
 
 const router = Router();
 
@@ -22,7 +22,7 @@ router.post("/reset-password/:token", resetPasswordConfirmController);
 router.post("/logout", logoutController);
 
 // protegida por JWT
-router.get("/me", verifyJWT, meController); // ✅ trocado
+router.get("/me", verifyJWT, meController); // trocado
 
 export default router;
 

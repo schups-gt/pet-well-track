@@ -1,54 +1,26 @@
-// storage em memória para SERVIÇOS
-let _servId = 1;
-const servicos = []; // { id, ownerId, titulo, descricao, preco_cents, criadoEm }
+import { db } from "../database/sqlite.js";
 
-export async function listServicos({ ownerId, search }) {
-  let data = servicos.filter(s => s.ownerId === ownerId);
-  if (search) {
-    const q = search.toLowerCase();
-    data = data.filter(s =>
-      (s.titulo || "").toLowerCase().includes(q) ||
-      (s.descricao || "").toLowerCase().includes(q)
-    );
-  }
-  data.sort((a, b) => b.id - a.id);
-  return data;
+export async function listServicos({ ownerId }) {
+  return db.prepare(`SELECT * FROM servicos WHERE owner_id = ? ORDER BY id DESC`).all(ownerId);
 }
-
 export async function getServicoById({ ownerId, id }) {
-  return servicos.find(s => s.ownerId === ownerId && s.id === id) || null;
+  return db.prepare(`SELECT * FROM servicos WHERE owner_id = ? AND id = ?`).get(ownerId, id) || null;
 }
-
 export async function createServico({ ownerId, titulo, descricao, preco_cents }) {
-  const novo = {
-    id: _servId++,
-    ownerId,
-    titulo,
-    descricao: descricao || null,
-    preco_cents,
-    criadoEm: new Date().toISOString()
-  };
-  servicos.push(novo);
-  return novo;
+  const info = db.prepare(`
+    INSERT INTO servicos (owner_id, titulo, descricao, preco_cents) VALUES (?, ?, ?, ?)
+  `).run(ownerId, titulo, descricao || null, Number(preco_cents));
+  return getServicoById({ ownerId, id: Number(info.lastInsertRowid) });
 }
-
 export async function updateServico({ ownerId, id, titulo, descricao, preco_cents }) {
-  const idx = servicos.findIndex(s => s.ownerId === ownerId && s.id === id);
-  if (idx === -1) return null;
-  const atual = servicos[idx];
-  const upd = {
-    ...atual,
-    titulo: titulo ?? atual.titulo,
-    descricao: descricao ?? atual.descricao,
-    preco_cents: (preco_cents ?? atual.preco_cents)
-  };
-  servicos[idx] = upd;
-  return upd;
+  const cur = await getServicoById({ ownerId, id });
+  if (!cur) return null;
+  db.prepare(`
+    UPDATE servicos SET titulo=?, descricao=?, preco_cents=? WHERE owner_id=? AND id=?
+  `).run(titulo ?? cur.titulo, descricao ?? cur.descricao, Number(preco_cents ?? cur.preco_cents), ownerId, id);
+  return getServicoById({ ownerId, id });
 }
-
 export async function deleteServico({ ownerId, id }) {
-  const idx = servicos.findIndex(s => s.ownerId === ownerId && s.id === id);
-  if (idx === -1) return false;
-  servicos.splice(idx, 1);
-  return true;
+  const info = db.prepare(`DELETE FROM servicos WHERE owner_id = ? AND id = ?`).run(ownerId, id);
+  return info.changes > 0;
 }

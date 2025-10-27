@@ -18,7 +18,7 @@ function validateCreate(body) {
 
 export async function listController(req, res, next) {
   try {
-    const ownerId = req.session.userId;
+    const ownerId = req.userId;
     const search = (req.query.search || "").toString();
     const data = await listClientes({ ownerId, search });
     return res.json({ success: true, data });
@@ -27,7 +27,7 @@ export async function listController(req, res, next) {
 
 export async function getByIdController(req, res, next) {
   try {
-    const ownerId = req.session.userId;
+    const ownerId = req.userId;
     const id = Number(req.params.id);
     if (Number.isNaN(id)) return res.status(400).json({ success:false, error:"ID inválido" });
 
@@ -43,7 +43,7 @@ export async function createController(req, res, next) {
     const errMsg = validateCreate(req.body);
     if (errMsg) return res.status(400).json({ success:false, error: errMsg });
 
-    const ownerId = req.session.userId;
+    const ownerId = req.userId;
     const { nome, email, telefone } = req.body;
     const novo = await createCliente({ ownerId, nome: nome.trim(), email, telefone });
     return res.status(201).json({ success: true, data: novo });
@@ -52,7 +52,7 @@ export async function createController(req, res, next) {
 
 export async function updateController(req, res, next) {
   try {
-    const ownerId = req.session.userId;
+    const ownerId = req.userId;
     const id = Number(req.params.id);
     if (Number.isNaN(id)) return res.status(400).json({ success:false, error:"ID inválido" });
 
@@ -70,7 +70,7 @@ export async function updateController(req, res, next) {
 
 export async function deleteController(req, res, next) {
   try {
-    const ownerId = req.session.userId;
+    const ownerId = req.userId;
     const id = Number(req.params.id);
     if (Number.isNaN(id)) return res.status(400).json({ success:false, error:"ID inválido" });
 
