@@ -1,57 +1,75 @@
 // server/src/services/clientes.service.js
+import { dbs } from "../database/sqlite.js";
 
-// storage em memória para CLIENTES
-let _clienteId = 1;
-const clientes = []; // { id, ownerId, nome, email, telefone, criadoEm }
+dbs.cliente.exec(`
+  CREATE TABLE IF NOT EXISTS clientes (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    owner_id INTEGER NOT NULL,
+    nome TEXT NOT NULL,
+    email TEXT,
+    telefone TEXT,
+    criado_em TEXT DEFAULT (datetime('now'))
+  );
+`);
 
 export async function listClientes({ ownerId, search }) {
-  let data = clientes.filter(c => c.ownerId === ownerId);
   if (search) {
-    const s = search.toLowerCase();
-    data = data.filter(c =>
-      (c.nome || "").toLowerCase().includes(s) ||
-      (c.email || "").toLowerCase().includes(s) ||
-      (c.telefone || "").toLowerCase().includes(s)
-    );
+    const s = `%${search.toLowerCase()}%`;
+    return dbs.cliente.prepare(`
+      SELECT * FROM clientes
+      WHERE owner_id = ?
+        AND (lower(nome) LIKE ? OR lower(email) LIKE ? OR lower(telefone) LIKE ?)
+      ORDER BY id DESC
+    `).all(ownerId, s, s, s);
   }
-  data.sort((a, b) => b.id - a.id);
-  return data;
+  return dbs.cliente.prepare(`
+    SELECT * FROM clientes
+    WHERE owner_id = ?
+    ORDER BY id DESC
+  `).all(ownerId);
 }
 
 export async function getClienteById({ ownerId, id }) {
-  return clientes.find(c => c.ownerId === ownerId && c.id === id) || null;
+  return db
+    .prepare(`SELECT * FROM clientes WHERE owner_id = ? AND id = ?`)
+    .get(ownerId, id) || null;
 }
 
 export async function createCliente({ ownerId, nome, email, telefone }) {
-  const novo = {
-    id: _clienteId++,
-    ownerId,
-    nome,
-    email: email || null,
-    telefone: telefone || null,
-    criadoEm: new Date().toISOString()
-  };
-  clientes.push(novo);
-  return novo;
+  const info = db
+    .prepare(`
+      INSERT INTO clientes (owner_id, nome, email, telefone, criado_em)
+      VALUES (?, ?, ?, ?, datetime('now'))
+    `)
+    .run(ownerId, nome, email || null, telefone || null);
+
+  return getClienteById({ ownerId, id: Number(info.lastInsertRowid) });
 }
 
 export async function updateCliente({ ownerId, id, nome, email, telefone }) {
-  const idx = clientes.findIndex(c => c.ownerId === ownerId && c.id === id);
-  if (idx === -1) return null;
-  const atual = clientes[idx];
-  const upd = {
-    ...atual,
-    nome: nome ?? atual.nome,
-    email: email ?? atual.email,
-    telefone: telefone ?? atual.telefone
-  };
-  clientes[idx] = upd;
-  return upd;
+  const atual = await getClienteById({ ownerId, id });
+  if (!atual) return null;
+
+  db.prepare(`
+    UPDATE clientes
+       SET nome = ?,
+           email = ?,
+           telefone = ?
+     WHERE owner_id = ? AND id = ?
+  `).run(
+    nome ?? atual.nome,
+    email ?? atual.email,
+    telefone ?? atual.telefone,
+    ownerId,
+    id
+  );
+
+  return getClienteById({ ownerId, id });
 }
 
 export async function deleteCliente({ ownerId, id }) {
-  const idx = clientes.findIndex(c => c.ownerId === ownerId && c.id === id);
-  if (idx === -1) return false;
-  clientes.splice(idx, 1);
-  return true;
+  const info = db
+    .prepare(`DELETE FROM clientes WHERE owner_id = ? AND id = ?`)
+    .run(ownerId, id);
+  return info.changes > 0;
 }
