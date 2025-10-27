@@ -1,17 +1,25 @@
-import React from 'react';
+
 import { Button } from "@/components/ui/button";
 import Header from '@/components/Header';
+import { Link } from 'react-router-dom';
+import React from 'react';
 import Hero from '@/components/Hero';
 import Features from '@/components/Features';
 import UserTypes from '@/components/UserTypes';
 import Footer from '@/components/Footer';
+import { useEffect, useState } from "react";
+
 
 
 const MeusPets = () => {
-  const pets = [
-    { nome: "Rex", especie: "Cachorro", status: "Saudável", imagem: "https://i.imgur.com/6a0PzVY.png" },
-    { nome: "Mimi", especie: "Gato", status: "Em consulta", imagem: "https://i.imgur.com/svGvZ1U.png" },
-  ];
+  const [pets, setPets] = useState([]);
+    
+  useEffect(() => {
+    fetch("http://localhost:3000/api/pets")
+      .then((res) => res.json())
+      .then((data) => setPets(data))
+      .catch(() => console.error("Erro ao carregar pets"));
+  }, []);
 
   return (
     <div className="min-h-screen">
@@ -41,10 +49,12 @@ const MeusPets = () => {
       </div>
 
       <div className="mt-12">
-        <Button className="bg-gradient-to-r from-purple-500 to-blue-400 mx-auto  mb-10 block font-semibold
-        text-white px-6 py-3 rounded-full shadow-md hover:opacity-90 transition duration-300">
-          + Adicionar Novo Pet
-        </Button>
+        <Link to="/cadastro-pet" className="text-white">
+          <Button className="bg-gradient-to-r from-purple-500 to-blue-400 mx-auto mb-10 block font-semibold
+          text-white px-6 py-3 rounded-full shadow-md hover:opacity-90 transition duration-300">
+            + Adicionar Novo Pet
+          </Button>
+        </Link>
       </div>
     </div>
   );

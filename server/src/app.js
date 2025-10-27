@@ -9,6 +9,7 @@ import authRoutes from "./routes/auth.routes.js";
 import clientesRoutes from "./routes/clientes.routes.js";
 import servicosRoutes from "./routes/servicos.routes.js";
 import agendamentosRoutes from "./routes/agendamentos.routes.js";
+import petsRoutes from "./routes/pets.routes.js";
 
 dotenv.config();
 const app = express();
@@ -21,6 +22,7 @@ app.use(cors({
 
 app.use(express.json());
 app.use(morgan("dev"));
+app.use("/api/pets", petsRoutes);
 
 // Sessão
 app.use(session({
