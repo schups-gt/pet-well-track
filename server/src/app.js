@@ -16,17 +16,17 @@ import { errorHandler } from "./middleware/errorHandler.js";
 dotenv.config();
 const app = express();
 
-// CORS - ajustar pro front
+// Configuração do CORS
 app.use(cors({
-  origin: "http://localhost:8080", // porta do front
+  origin: "http://localhost:8080",
   credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization']
 }));
 
+// Middlewares essenciais
 app.use(express.json());
-app.use(morgan("dev"));
-app.use("/api/pets", petsRoutes);
 app.use(cookieParser());
-
 app.use(morgan("dev"));
 
 // Healthcheck

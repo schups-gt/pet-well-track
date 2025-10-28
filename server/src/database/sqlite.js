@@ -82,6 +82,9 @@ function ensureTables() {
   `);
 }
 
+// Garante que todas as tabelas sejam criadas
+ensureTables();
+
 // 👇 Exporta também "db" para compatibilidade com services que esperam um único db
 // Por padrão vamos usar o banco de clientes/usuários como principal:
 export const db = dbs.cliente;
