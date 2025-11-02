@@ -1,6 +1,7 @@
 import { Button } from '@/components/ui/button';
 import heroImage from '@/assets/hero-pet-health.jpg';
 import { ArrowRight, Play } from 'lucide-react';
+import Carrossel from './carrossel';
 
 const Hero = () => {
   return (
@@ -52,11 +53,7 @@ const Hero = () => {
         
         <div className="relative">
           <div className="relative rounded-3xl overflow-hidden shadow-card">
-            <img 
-              src={heroImage} 
-              alt="Veterinário examinando pet com tecnologia moderna" 
-              className="w-full h-auto object-cover"
-            />
+            <Carrossel />
           </div>
           
           {/* Floating cards */}

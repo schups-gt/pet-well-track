@@ -37,9 +37,11 @@ const Header = () => {
           <Link to="/entrar" className="hidden md:inline-flex">
             Entrar
           </Link>
+          <Link to="/registrar" className="hidden md:inline-flex">
           <Button variant="hero">
-            Acessar Plataforma
+            Criar conta
           </Button>
+          </Link>
           <Button variant="ghost" size="icon" className="md:hidden">
             <Menu className="w-5 h-5" />
           </Button>

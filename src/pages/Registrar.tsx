@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import api from "../lib/api";
+import PawPatternBackground from '@/components/ui/PawPatternBackground';
 
 const RegistrarPage = () => {
   const [name, setName] = useState("");
@@ -34,9 +35,10 @@ const RegistrarPage = () => {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100 p-6">
-      <div className="w-full max-w-md bg-white rounded-lg shadow-md p-8">
-        <h1 className="text-3xl font-bold text-center text-purple-600 mb-6">Registrar</h1>
+    <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100 p-6 relative">
+      <PawPatternBackground opacity={0.05} />
+      <div className="z-10 w-full max-w-md bg-white rounded-lg shadow-md p-8">
+        <h1 className="text-3xl font-bold text-center text-purple-600 mb-6">Criar conta</h1>
 
         {message && (
           <div className={`mb-4 text-center font-semibold ${
@@ -92,7 +94,7 @@ const RegistrarPage = () => {
           </button>
 
           <div className="flex justify-center gap-6 mt-4 text-sm">
-            <a href="/entrar" className="text-purple-500 hover:underline">Já tenho conta</a>
+            <a href="/entrar" className="text-purple-500 hover:underline">Já tenho uma conta</a>
           </div>
         </form>
       </div>
