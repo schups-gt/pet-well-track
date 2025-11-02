@@ -12,12 +12,22 @@ const RegistrarPage = () => {
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
+      console.log('Enviando dados de registro:', { name, email, password: '***' });
       const res = await api.post("/register", { name, email, password: senha });
-      setMessage("Registrado com sucesso!");
-      setMessageType("success");
-      setTimeout(() => {
-        window.location.href = "/"; // leva pra página inicial ou login
-      }, 1000);
+      
+      if (res.data.success) {
+        // Armazena os dados do usuário
+        localStorage.setItem("user", JSON.stringify(res.data.data));
+        setMessage("Registrado com sucesso!");
+        setMessageType("success");
+        
+        // Redireciona para a página de login
+        setTimeout(() => {
+          window.location.href = "/entrar";
+        }, 1500);
+      } else {
+        throw new Error(res.data.error || "Erro ao registrar");
+      }
     } catch (err: any) {
       setMessage(err.response?.data?.error || "Erro ao registrar");
       setMessageType("error");
