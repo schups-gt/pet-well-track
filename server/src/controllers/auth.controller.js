@@ -19,11 +19,20 @@ const SECRET = process.env.JWT_SECRET;
 const EXPIRES_IN = process.env.JWT_EXPIRES_IN || "2h";
 
 // REGISTER -> cria usuário e já retorna JWT
+const COOKIE_OPTIONS = {
+  httpOnly: true,
+  secure: process.env.NODE_ENV === 'production',
+  sameSite: 'lax',
+  maxAge: 24 * 60 * 60 * 1000 // 24 horas
+};
+
 export async function registerController(req, res, next) {
   try {
+    console.log('📝 Recebendo requisição de registro:', req.body);
     const { email, password, name } = req.body;
 
     if (!email || !password || !name) {
+      console.log('❌ Dados inválidos:', { email, name, password: '***' });
       return res
         .status(400)
         .json({ success: false, error: "Campos obrigatórios: name, email, password" });
@@ -38,11 +47,13 @@ export async function registerController(req, res, next) {
     const user = await createUser({ email, name, password_hash });
 
     const token = jwt.sign({ userId: user.id }, SECRET, { expiresIn: EXPIRES_IN });
+    
+    // Define o cookie JWT
+    res.cookie('token', token, COOKIE_OPTIONS);
 
     return res.status(201).json({
       success: true,
-      data: { id: user.id, name: user.name, email: user.email },
-      token
+      data: { id: user.id, name: user.name, email: user.email }
     });
   } catch (err) {
     next(err);
@@ -69,11 +80,13 @@ export async function loginController(req, res, next) {
     }
 
     const token = jwt.sign({ userId: user.id }, SECRET, { expiresIn: EXPIRES_IN });
+    
+    // Define o cookie JWT
+    res.cookie('token', token, COOKIE_OPTIONS);
 
     return res.json({
       success: true,
-      data: { id: user.id, name: user.name, email: user.email },
-      token
+      data: { id: user.id, name: user.name, email: user.email }
     });
   } catch (err) {
     next(err);
