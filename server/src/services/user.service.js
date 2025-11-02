@@ -1,5 +1,6 @@
 import { db } from "../database/sqlite.js";
 
+
 db.exec(`
   CREATE TABLE IF NOT EXISTS users (
     id INTEGER PRIMARY KEY AUTOINCREMENT,

@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import api from "../lib/api";
 import PawPatternBackground from '@/components/ui/PawPatternBackground';
+import { useAuth } from "../context/AuthContext";
 
 const RegistrarPage = () => {
   const [name, setName] = useState("");
@@ -8,15 +9,18 @@ const RegistrarPage = () => {
   const [senha, setSenha] = useState("");
   const [message, setMessage] = useState("");
   const [messageType, setMessageType] = useState(""); // "error" ou "success"
+  const { login } = useAuth(); // pega a função login do contexto
 
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
       const res = await api.post("/register", { name, email, password: senha });
+      const { data: user, token } = res.data; // pega dados do usuário e token
+      login(user, token); // loga automaticamente
       setMessage("Registrado com sucesso!");
       setMessageType("success");
       setTimeout(() => {
-        window.location.href = "/"; // leva pra página inicial ou login
+        window.location.href = "/"; // redireciona para página inicial
       }, 1000);
     } catch (err: any) {
       setMessage(err.response?.data?.error || "Erro ao registrar");

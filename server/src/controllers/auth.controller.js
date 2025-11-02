@@ -2,6 +2,8 @@
 import jwt from "jsonwebtoken";
 import bcrypt from "bcryptjs";
 import crypto from "crypto";
+import dotenv from "dotenv";
+import sqlite3 from "sqlite3";
 // import nodemailer from "nodemailer"; // deixe comentado se não for usar agora
 
 import {
