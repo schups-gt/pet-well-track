@@ -1,5 +1,7 @@
 import React, { useState } from "react";
 import api from "../lib/api";
+import PawPatternBackground from '@/components/ui/PawPatternBackground';
+import { useAuth } from "../context/AuthContext";
 
 const RegistrarPage = () => {
   const [name, setName] = useState("");
@@ -7,16 +9,27 @@ const RegistrarPage = () => {
   const [senha, setSenha] = useState("");
   const [message, setMessage] = useState("");
   const [messageType, setMessageType] = useState(""); // "error" ou "success"
+  const { login } = useAuth(); // pega a função login do contexto
 
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
+      console.log('Enviando dados de registro:', { name, email, password: '***' });
       const res = await api.post("/register", { name, email, password: senha });
-      setMessage("Registrado com sucesso!");
-      setMessageType("success");
-      setTimeout(() => {
-        window.location.href = "/"; // leva pra página inicial ou login
-      }, 1000);
+      
+      if (res.data.success) {
+        // Armazena os dados do usuário
+        localStorage.setItem("user", JSON.stringify(res.data.data));
+        setMessage("Registrado com sucesso!");
+        setMessageType("success");
+        
+        // Redireciona para a página de login
+        setTimeout(() => {
+          window.location.href = "/entrar";
+        }, 1500);
+      } else {
+        throw new Error(res.data.error || "Erro ao registrar");
+      }
     } catch (err: any) {
       setMessage(err.response?.data?.error || "Erro ao registrar");
       setMessageType("error");
@@ -24,9 +37,10 @@ const RegistrarPage = () => {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100 p-6">
-      <div className="w-full max-w-md bg-white rounded-lg shadow-md p-8">
-        <h1 className="text-3xl font-bold text-center text-purple-600 mb-6">Registrar</h1>
+    <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100 p-6 relative">
+      <PawPatternBackground opacity={0.05} />
+      <div className="z-10 w-full max-w-md bg-white rounded-lg shadow-md p-8">
+        <h1 className="text-3xl font-bold text-center text-purple-600 mb-6">Criar conta</h1>
 
         {message && (
           <div className={`mb-4 text-center font-semibold ${
@@ -82,7 +96,7 @@ const RegistrarPage = () => {
           </button>
 
           <div className="flex justify-center gap-6 mt-4 text-sm">
-            <a href="/entrar" className="text-purple-500 hover:underline">Já tenho conta</a>
+            <a href="/entrar" className="text-purple-500 hover:underline">Já tenho uma conta</a>
           </div>
         </form>
       </div>

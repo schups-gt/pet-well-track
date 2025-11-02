@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import api from '../lib/api';
 
+
 const LoginPage = () => {
   const [email, setEmail] = useState('');
   const [senha, setSenha] = useState('');
@@ -73,10 +74,24 @@ const LoginPage = () => {
             Entrar
           </button>
 
-          <div className="flex justify-center gap-6 mt-4 text-sm">
-            <a href="/esqueci-senha" className="text-black hover:underline">Esqueci minha senha</a>
-            <a href="/registrar" className="text-purple-500 hover:underline">Registrar</a>
+          <div className="flex flex-col items-center space-y-2 mt-4 text-sm">
+          {/* 1. LINK "Esqueci minha senha" (mantido na coluna) */}
+          <a href="/esqueci-senha" className="text-black hover:underline">
+            Esqueci minha senha
+          </a>
+          
+          {/* 2. NOVO GRUPO: "Não tem uma conta" + "Registrar" (na mesma linha) */}
+          <div className="flex items-center gap-1">
+            {/* Texto estático */}
+            <span className="text-muted-foreground">
+              Não tem uma conta?
+            </span>
+            {/* Link de Registrar */}
+            <a href="/registrar" className="text-purple-500 hover:underline font-medium">
+              Registrar
+            </a>
           </div>
+        </div>
         </form>
       </div>
     </div>
