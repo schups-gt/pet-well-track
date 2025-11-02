@@ -10,20 +10,23 @@ import authRoutes from "./routes/auth.routes.js";
 import clientesRoutes from "./routes/clientes.routes.js";
 import servicosRoutes from "./routes/servicos.routes.js";
 import agendamentosRoutes from "./routes/agendamentos.routes.js";
+import petsRoutes from "./routes/pets.routes.js";
 import { errorHandler } from "./middleware/errorHandler.js";
 
 dotenv.config();
 const app = express();
 
-// CORS - ajustar pro front
+// Configuração do CORS
 app.use(cors({
-  origin: "http://localhost:8080", // porta do front
+  origin: "http://localhost:8080",
   credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization']
 }));
 
+// Middlewares essenciais
 app.use(express.json());
 app.use(cookieParser());
-
 app.use(morgan("dev"));
 
 // Healthcheck
