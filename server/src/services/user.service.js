@@ -1,5 +1,17 @@
 import { db } from "../database/sqlite.js";
 
+
+db.exec(`
+  CREATE TABLE IF NOT EXISTS users (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name TEXT NOT NULL,
+    email TEXT NOT NULL UNIQUE,
+    password_hash TEXT NOT NULL,
+    reset_token TEXT,
+    reset_expires INTEGER
+  );
+`);
+
 export async function findUserByEmail(email) {
   return db.prepare(`SELECT * FROM users WHERE email = ?`).get(email) || null;
 }

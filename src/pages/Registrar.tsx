@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import api from "../lib/api";
 import PawPatternBackground from '@/components/ui/PawPatternBackground';
+import { useAuth } from "../context/AuthContext";
 
 const RegistrarPage = () => {
   const [name, setName] = useState("");
@@ -8,6 +9,7 @@ const RegistrarPage = () => {
   const [senha, setSenha] = useState("");
   const [message, setMessage] = useState("");
   const [messageType, setMessageType] = useState(""); // "error" ou "success"
+  const { login } = useAuth(); // pega a função login do contexto
 
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
