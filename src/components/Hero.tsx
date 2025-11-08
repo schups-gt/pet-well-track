@@ -56,13 +56,6 @@ const Hero = () => {
             <Carrossel />
           </div>
           
-          {/* Floating cards */}
-          <div className="absolute -top-4 -right-4 bg-card p-4 rounded-xl shadow-card border border-border">
-            <div className="flex items-center gap-2">
-              <div className="w-3 h-3 bg-health-pink rounded-full animate-pulse" />
-              <span className="text-sm font-medium">Status atual: Saudável</span>
-            </div>
-          </div>
           
           <div className="absolute -bottom-4 -left-4 bg-card p-4 rounded-xl shadow-card border border-border">
             <div className="text-center">
