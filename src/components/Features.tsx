@@ -12,37 +12,37 @@ const features = [
   {
     icon: Activity,
     title: "Monitoramento em Tempo Real",
-    description: "Acompanhe os sinais vitais e atividades do seu pet 24 horas por dia com sensores inteligentes.",
+    description: "Acompanhe os sinais vitais e atividades do seu pet 24 horas por dia.",
     color: "text-health-pink"
   },
   {
     icon: Calendar,
     title: "Histórico Completo",
-    description: "Tenha acesso ao histórico médico completo, vacinas, exames e consultas organizados em um só lugar.",
+    description: "Tenha acesso ao histórico médico completo, exames e consultas organizados em um só lugar.",
     color: "text-health-blue"
   },
   {
     icon: MessageCircle,
     title: "Comunicação Direta",
-    description: "Converse diretamente com veterinários através de chat seguro e receba orientações especializadas.",
+    description: "Converse diretamente com a veterinária através da pagina 'contato' e receba orientações especializadas.",
     color: "text-primary"
   },
   {
     icon: Shield,
-    title: "Alertas Inteligentes",
-    description: "Receba notificações automáticas sobre mudanças no comportamento ou saúde do seu pet.",
+    title: "DEFINIR FUNCIONALIDADE",
+    description: "PLACE HOLDER",
     color: "text-accent"
   },
   {
     icon: Smartphone,
-    title: "App Mobile",
-    description: "Acesse todas as funcionalidades através do nosso aplicativo mobile intuitivo e responsivo.",
+    title: "Site Versátil",
+    description: "Acesse todas as funcionalidades e informações através de nossas abas de navegação.",
     color: "text-health-pink"
   },
   {
     icon: Users,
-    title: "Rede de Especialistas",
-    description: "Conecte-se com uma rede de veterinários especializados e profissionais certificados.",
+    title: "Atendimento em Casa",
+    description: "Nossa veterinária especializada está pronta para cuidar do seu pet em casa.",
     color: "text-health-blue"
   }
 ];
@@ -57,7 +57,7 @@ const Features = () => {
           </h2>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
             Descubra como nossa plataforma revoluciona o cuidado com pets através 
-            de tecnologia avançada e atendimento humanizado.
+            de atendimento humanizado.
           </p>
         </div>
         
