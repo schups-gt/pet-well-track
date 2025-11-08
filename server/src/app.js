@@ -32,6 +32,7 @@ app.use(express.json());
 app.use(cookieParser());
 app.use(morgan("dev"));
 
+
 // Healthcheck
 app.get("/ping", (req, res) => {
   res.json({ message: "API online" });
