@@ -2,8 +2,11 @@ import { useState, useEffect } from "react";
 import foto1 from "../assets/foto 1.jpg";
 import foto2 from "../assets/foto 2.jpg";
 import foto3 from "../assets/foto 3.jpg";
+import foto4 from "../assets/foto 4.jpg";
+import foto5 from "../assets/foto 5.jpg";
+import foto6 from "../assets/foto 6.jpg";
 
-const images = [foto1, foto2, foto3];
+const images = [foto1, foto2, foto3, foto4, foto5, foto6];
 
 const HeroCarousel = () => {
   const [current, setCurrent] = useState(0);
@@ -30,7 +33,7 @@ const HeroCarousel = () => {
             src={img}
             alt={`Slide ${i + 1}`}
             // Importante: flex-none e w-full garantem que cada imagem ocupe exatamente 100% da largura
-            className="flex-none w-full h-full object-cover" 
+            className="flex-none w-full h-[660px] object-contain bg-black/5" 
           />
         ))}
       </div>
