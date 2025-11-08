@@ -21,11 +21,18 @@ export async function findUserById(id) {
 }
 
 export async function createUser({ name, email, password_hash }) {
-  const stmt = db.prepare(`
-    INSERT INTO users (name, email, password_hash) VALUES (?, ?, ?)
-  `);
-  const info = stmt.run(name, email, password_hash);
-  return { id: info.lastInsertRowid, name, email };
+  console.log('📝 Tentando criar usuário:', { name, email });
+  try {
+    const stmt = db.prepare(`
+      INSERT INTO users (name, email, password_hash) VALUES (?, ?, ?)
+    `);
+    const info = stmt.run(name, email, password_hash);
+    console.log('Cliente cadastrado com sucesso:', { id: info.lastInsertRowid });
+    return { id: info.lastInsertRowid, name, email };
+  } catch (error) {
+    console.error('Erro ao cadastrar o cliente:', error);
+    throw error;
+  }
 }
 
 export async function updateUserToken(id, token, expires) {
