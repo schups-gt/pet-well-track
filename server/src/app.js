@@ -44,7 +44,7 @@ app.use("/api/clientes", clientesRoutes);
 app.use("/api/servicos", servicosRoutes);
 app.use("/api/agendamentos", agendamentosRoutes);
 app.use("/api/calendar", calendarRoutes);
-app.use("/api/calendar/admin-tools", adminCalendarRoutes);
+app.use("/api/admin/calendar", adminCalendarRoutes);
 
 // handler de erro (sempre por último)
 app.use(errorHandler);
