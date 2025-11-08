@@ -60,7 +60,7 @@ const UserTypes = () => {
                   <div>
                     <h4 className="font-semibold text-foreground">Histórico Completo</h4>
                     <p className="text-muted-foreground text-sm">
-                      Acesse exames, consultas e vacinas organizados cronologicamente.
+                      Acesse exames, consultas e agendamentos organizados cronologicamente.
                     </p>
                   </div>
                 </div>
@@ -70,15 +70,12 @@ const UserTypes = () => {
                   <div>
                     <h4 className="font-semibold text-foreground">Alertas Personalizados</h4>
                     <p className="text-muted-foreground text-sm">
-                      Receba lembretes sobre medicamentos, consultas e cuidados especiais.
+                      Receba feedbacks sobre medicamentos, consultas e cuidados especiais.
                     </p>
                   </div>
                 </div>
               </div>
               
-              <Button variant="health" className="w-full">
-                Acessar como Tutor
-              </Button>
             </CardContent>
           </Card>
           
@@ -133,9 +130,6 @@ const UserTypes = () => {
                 </div>
               </div>
               
-              <Button variant="accent" className="w-full">
-                Acessar como Veterinário
-              </Button>
             </CardContent>
           </Card>
         </div>

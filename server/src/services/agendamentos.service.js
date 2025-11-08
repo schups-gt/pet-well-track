@@ -1,4 +1,3 @@
-// src/services/agendamentos.service.js
 import dayjs from "dayjs";
 import { dbs } from "../database/sqlite.js";
 
@@ -38,15 +37,17 @@ function checaConflito({ ownerId, servico_id, data_hora }) {
   const dayEnd = start.endOf("day").toISOString();
 
   // 1) Agendamentos do dia (status != 'cancelled')
-  const appts = dbs.agendamento
-    .prepare(`
-      SELECT id, servico_id, data_hora, COALESCE(status,'') AS status
-      FROM agendamentos
-      WHERE owner_id=? AND data_hora BETWEEN ? AND ?
-        AND (status IS NULL OR status <> 'cancelled')
-      ORDER BY data_hora
-    `)
-    .all(ownerId, dayStart, dayEnd);
+  // 1) Agendamentos do dia (status != 'cancelado')
+const appts = dbs.agendamento
+  .prepare(`
+    SELECT a.id, a.servico_id, a.data_hora, COALESCE(a.status,'') AS status
+    FROM agendamentos a
+    WHERE a.owner_id = ?
+      AND a.data_hora BETWEEN ? AND ?
+      AND (a.status IS NULL OR a.status <> 'cancelado')
+    ORDER BY a.data_hora
+  `)
+  .all(ownerId, dayStart, dayEnd);
 
   // Calcula ranges ocupados dos agendamentos existentes
   for (const a of appts) {

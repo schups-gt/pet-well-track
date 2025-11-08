@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useAuth } from "@/context/AuthContext";
+import { useAuth } from "@/context/AuthContext"; // Corrigido para '@/contexts/AuthContext'
 import { useNavigate } from "react-router-dom";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
@@ -11,12 +11,16 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Camera, Save, ArrowLeft } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import api from '@/lib/api'; // Importação da sua instância da API
 
 export default function Perfil() {
-  const { user } = useAuth();
+  const { user, login } = useAuth(); // Adicionei 'login' para atualizar o contexto
   const navigate = useNavigate();
   const { toast } = useToast();
   
+  // NOVO: Estado de carregamento do botão
+  const [isLoading, setIsLoading] = useState(false);
+
   const [formData, setFormData] = useState({
     nome: user?.name || "",
     email: user?.email || "",
@@ -44,14 +48,60 @@ export default function Perfil() {
     }
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    // Aqui você implementaria a lógica para salvar no backend
-    toast({
-      title: "Perfil atualizado!",
-      description: "Suas informações foram salvas com sucesso.",
-    });
+    // 1. Validar se o usuário está logado
+    if (!user || !user.token) {
+        toast({
+            title: "Erro de Autenticação",
+            description: "Você precisa estar logado para salvar.",
+            variant: "destructive",
+        });
+        return;
+    }
+
+    // 2. Coletar apenas os campos que o backend aceita (Nome e Email são os focos)
+    const updateData = {
+        name: formData.nome,
+        // O email geralmente é lido do token e não é editável facilmente
+        // Mas se for editável, seria: email: formData.email, 
+        // Vamos focar no nome primeiro.
+    };
+
+    setIsLoading(true);
+
+    try {
+        // 3. Enviar a requisição PATCH/PUT. Assumindo que seu Back-end tem o endpoint /api/user/profile
+        const response = await api.put('/user/profile', updateData, {
+            headers: {
+                Authorization: `Bearer ${user.token}`, // Envia o token para autenticação
+            },
+        });
+
+        // 4. Se o Back-end retornar o objeto de usuário atualizado:
+        const updatedUser = response.data.user;
+        
+        // NOVO: Atualiza o contexto global de autenticação com os novos dados
+        // Isso fará com que o Header e o Perfil reflitam as mudanças instantaneamente.
+        login({ ...user, name: updatedUser.name }); 
+
+        toast({
+          title: "Perfil atualizado!",
+          description: "Suas informações foram salvas com sucesso.",
+          variant: "default",
+        });
+
+    } catch (error) {
+        console.error("Erro ao salvar perfil:", error);
+        toast({
+          title: "Erro ao salvar",
+          description: "Não foi possível atualizar o perfil. Tente novamente.",
+          variant: "destructive",
+        });
+    } finally {
+        setIsLoading(false);
+    }
   };
 
   const getInitials = () => {
@@ -63,6 +113,19 @@ export default function Perfil() {
       .slice(0, 2);
   };
 
+  // Se o usuário não estiver logado, redirecionar para o login
+        if (!user) {
+        const redirectTimeout = setTimeout(() => {
+            navigate('/entrar');
+            clearTimeout(redirectTimeout); // Clear the timeout
+        }, 1000);
+
+        return (
+            <div className="flex justify-center items-center min-h-screen">
+            <p>Redirecionando para o login...</p>
+            </div>
+        );
+        }
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-background to-health-blue/5">
       <Header />
@@ -135,6 +198,7 @@ export default function Perfil() {
                     onChange={handleInputChange}
                     placeholder="seu@email.com"
                     required
+                    disabled // Desabilitado no Front-end, pois a alteração de email requer steps de verificação
                   />
                 </div>
 
@@ -200,9 +264,13 @@ export default function Perfil() {
 
               {/* Botão de Salvar */}
               <div className="flex justify-end pt-4">
-                <Button type="submit" variant="hero" size="lg">
-                  <Save className="w-4 h-4 mr-2" />
-                  Salvar alterações
+                <Button type="submit" variant="hero" size="lg" disabled={isLoading}>
+                  {isLoading ? 'Salvando...' : (
+                    <>
+                      <Save className="w-4 h-4 mr-2" />
+                      Salvar alterações
+                    </>
+                  )}
                 </Button>
               </div>
             </form>
