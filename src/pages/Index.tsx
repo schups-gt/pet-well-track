@@ -3,6 +3,7 @@ import Hero from '@/components/Hero';
 import Features from '@/components/Features';
 import UserTypes from '@/components/UserTypes';
 import Footer from '@/components/Footer';
+import PawPatternBackground from '@/components/ui/PawPatternBackground';
 
 const Index = () => {
   return (

@@ -1,10 +1,6 @@
-// server/src/controllers/auth.controller.js
 import jwt from "jsonwebtoken";
 import bcrypt from "bcryptjs";
 import crypto from "crypto";
-import dotenv from "dotenv";
-import sqlite3 from "sqlite3";
-// import nodemailer from "nodemailer"; // deixe comentado se não for usar agora
 
 import {
   findUserByEmail,
@@ -12,27 +8,40 @@ import {
   findUserById,
   updateUserToken,
   findUserByResetToken,
-  updateUserPassword
+  updateUserPassword,
 } from "../services/user.service.js";
+
+import { dbs } from "../database/sqlite.js";
+import { createCliente } from "../services/clientes.service.js";
 
 const SECRET = process.env.JWT_SECRET;
 const EXPIRES_IN = process.env.JWT_EXPIRES_IN || "2h";
 
-// REGISTER -> cria usuário e já retorna JWT
+// Cookie do JWT (se você não usa cookie no front, pode remover)
 const COOKIE_OPTIONS = {
   httpOnly: true,
-  secure: process.env.NODE_ENV === 'production',
-  sameSite: 'lax',
-  maxAge: 24 * 60 * 60 * 1000 // 24 horas
+  secure: process.env.NODE_ENV === "production",
+  sameSite: "lax",
+  maxAge: 24 * 60 * 60 * 1000, // 24h
 };
 
+// util: busca cliente por email (escopo do owner)
+function findClienteByEmail(ownerId, email) {
+  return (
+    dbs.cliente
+      .prepare(
+        `SELECT id FROM clientes WHERE owner_id = ? AND email = ? LIMIT 1`
+      )
+      .get(ownerId, email) || null
+  );
+}
+
+// REGISTER
 export async function registerController(req, res, next) {
   try {
-    console.log('📝 Recebendo requisição de registro:', req.body);
-    const { email, password, name } = req.body;
+    const { email, password, name, role = "user", owner_id = 1 } = req.body;
 
     if (!email || !password || !name) {
-      console.log('❌ Dados inválidos:', { email, name, password: '***' });
       return res
         .status(400)
         .json({ success: false, error: "Campos obrigatórios: name, email, password" });
@@ -44,23 +53,51 @@ export async function registerController(req, res, next) {
     }
 
     const password_hash = await bcrypt.hash(password, 10);
-    const user = await createUser({ email, name, password_hash });
+    const user = await createUser({ email, name, password_hash, role, owner_id });
 
-    const token = jwt.sign({ userId: user.id }, SECRET, { expiresIn: EXPIRES_IN });
-    
-    // Define o cookie JWT
-    res.cookie('token', token, COOKIE_OPTIONS);
+    // se for tutor (user comum), garanta a ficha em "clientes" e vincule ao user_id
+    if ((user.role || "user") === "user") {
+      const cli = findClienteByEmail(user.owner_id, user.email);
+      if (!cli) {
+        await createCliente({
+          ownerId: user.owner_id,
+          nome: user.name,
+          email: user.email,
+          telefone: null,
+        });
+      }
+      // amarra o cliente (existente ou recém-criado) ao user_id
+      dbs.cliente
+        .prepare(
+          `UPDATE clientes SET user_id = ? WHERE owner_id = ? AND email = ?`
+        )
+        .run(user.id, user.owner_id, user.email);
+    }
 
+    const token = jwt.sign(
+      { userId: user.id, role: user.role, ownerId: user.owner_id },
+      SECRET,
+      { expiresIn: EXPIRES_IN }
+    );
+
+    res.cookie("token", token, COOKIE_OPTIONS);
     return res.status(201).json({
       success: true,
-      data: { id: user.id, name: user.name, email: user.email }
+      data: {
+        id: user.id,
+        name: user.name,
+        email: user.email,
+        role: user.role,
+        owner_id: user.owner_id,
+        token, // útil para Postman/front
+      },
     });
   } catch (err) {
     next(err);
   }
 }
 
-// LOGIN -> valida credenciais e retorna JWT
+// LOGIN
 export async function loginController(req, res, next) {
   try {
     const { email, password } = req.body;
@@ -79,26 +116,35 @@ export async function loginController(req, res, next) {
       return res.status(401).json({ success: false, error: "Credenciais inválidas" });
     }
 
-    const token = jwt.sign({ userId: user.id }, SECRET, { expiresIn: EXPIRES_IN });
-    
-    // Define o cookie JWT
-    res.cookie('token', token, COOKIE_OPTIONS);
+    const token = jwt.sign(
+      { userId: user.id, role: user.role, ownerId: user.owner_id },
+      SECRET,
+      { expiresIn: EXPIRES_IN }
+    );
 
+    res.cookie("token", token, COOKIE_OPTIONS);
     return res.json({
       success: true,
-      data: { id: user.id, name: user.name, email: user.email }
+      data: {
+        id: user.id,
+        name: user.name,
+        email: user.email,
+        role: user.role,
+        owner_id: user.owner_id,
+        token, // devolve também no login
+      },
     });
   } catch (err) {
     next(err);
   }
 }
 
-// LOGOUT -> com JWT stateless basta o front descartar o token
+// LOGOUT
 export async function logoutController(_req, res, _next) {
   return res.status(204).end();
 }
 
-// ME -> requer verifyJWT para preencher req.userId
+// ME (requer verifyJWT)
 export async function meController(req, res, next) {
   try {
     const user = await findUserById(req.userId);
@@ -107,14 +153,20 @@ export async function meController(req, res, next) {
     }
     return res.json({
       success: true,
-      data: { id: user.id, name: user.name, email: user.email }
+      data: {
+        id: user.id,
+        name: user.name,
+        email: user.email,
+        role: user.role,
+        owner_id: user.owner_id,
+      },
     });
   } catch (err) {
     next(err);
   }
 }
 
-// RESET DE SENHA (fluxo por token próprio, independente do JWT)
+// RESET DE SENHA (solicitar token)
 export async function resetPasswordController(req, res, next) {
   try {
     const { email } = req.body;
@@ -122,7 +174,7 @@ export async function resetPasswordController(req, res, next) {
     if (!user) return res.json({ success: true });
 
     const token = crypto.randomBytes(32).toString("hex");
-    const expires = Date.now() + 1000 * 60 * 60; // 1 hora
+    const expires = Date.now() + 1000 * 60 * 60; // 1h
     await updateUserToken(user.id, token, expires);
 
     console.log(`Token gerado para ${email}: ${token}`);
@@ -134,6 +186,7 @@ export async function resetPasswordController(req, res, next) {
   }
 }
 
+// RESET DE SENHA (confirmar nova senha)
 export async function resetPasswordConfirmController(req, res, next) {
   try {
     const { token } = req.params;
@@ -158,35 +211,3 @@ export async function resetPasswordConfirmController(req, res, next) {
     next(err);
   }
 }
-
-
-
-//Para quando utilizar banco de dados
-/*
-export async function login(req, res) {
-  const { email, password } = req.body;
-  if (!email || !password) return res.status(400).json({ message: 'Email e senha são obrigatórios' });
-
-  const user = await userService.findByEmail(email); // adapte
-  if (!user) return res.status(401).json({ message: 'Credenciais inválidas' });
-
-  const valid = await bcrypt.compare(password, user.password);
-  if (!valid) return res.status(401).json({ message: 'Credenciais inválidas' });
-
-  const payload = { sub: user.id, roles: user.roles || [] };
-  const token = jwt.sign(payload, SECRET, { expiresIn: EXPIRES_IN });
-
-  res.cookie(COOKIE_NAME, token, {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === 'production',
-    sameSite: 'lax',
-    maxAge: 1000 * 60 * 60 // 1h, ou ajuste
-  });
-   const { password: _pwd, ...userSafe } = user;
-  res.json({ user: userSafe });
-}
-
-export function logout(req, res) {
-  res.clearCookie(COOKIE_NAME, { httpOnly: true, sameSite: 'lax', secure: process.env.NODE_ENV === 'production' });
-  res.json({ message: 'Desconectado' });
-}*/

@@ -4,7 +4,7 @@ interface PawPatternProps {
     opacity?: number;
 }
 
-const PawPatternBackground: React.FC<PawPatternProps> = ({ opacity = 0.05 }) => {
+const PawPatternBackground: React.FC<PawPatternProps> = ({ opacity = 0.05}) => {
   // Cor PRETA para visualização. Se quiser a cor do tema, use: '333333'
   const svgColor = "efe7f5"; 
   

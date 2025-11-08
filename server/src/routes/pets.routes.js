@@ -1,9 +1,21 @@
-import express from "express";
-import { createPet, getPets } from "../controllers/pets.controller.js";
+// server/src/routes/pets.routes.js
+import { Router } from "express";
+import { verifyJWT } from "../middleware/verifyJWT.js";
+import {
+  listController,
+  getByIdController,
+  createController,
+  updateController,
+  deleteController,
+} from "../controllers/pets.controller.js";
 
-const router = express.Router();
+const router = Router();
+router.use(verifyJWT);
 
-router.post("/", createPet);   // Cadastrar pet
-router.get("/", getPets);      // Listar pets
+router.get("/", listController);
+router.get("/:id", getByIdController);
+router.post("/", createController);
+router.put("/:id", updateController);
+router.delete("/:id", deleteController);
 
 export default router;

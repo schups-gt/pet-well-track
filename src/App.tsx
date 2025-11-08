@@ -14,6 +14,7 @@ import Registrar from "./pages/Registrar";
 import EsqueciSenha from "./pages/EsqueciSenha";
 import ResetarSenha from "./pages/ResetarSenha";
 import CadastrarPet from "./pages/CadastroPet";
+import Perfil from "./pages/Perfil";
 import { AuthProvider } from "./context/AuthContext";
 import PrivateRoute from "./components/PrivateRoute";
 
@@ -54,6 +55,7 @@ const App = () => (
                 </PrivateRoute>
               } 
             />
+            <Route path="/perfil" element={<Perfil />} />
             <Route path="/nossaequipe" element={<NossaEquipe />} />
             <Route path="/contato" element={<Contato />} />
             <Route path="/redefinir-senha/:token" element={<ResetarSenha />} />
