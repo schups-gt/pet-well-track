@@ -12,6 +12,9 @@ import servicosRoutes from "./routes/servicos.routes.js";
 import agendamentosRoutes from "./routes/agendamentos.routes.js";
 import petsRoutes from "./routes/pets.routes.js";
 import { errorHandler } from "./middleware/errorHandler.js";
+import calendarRoutes from "./routes/calendar.routes.js";
+import adminCalendarRoutes from "./routes/admin-calendar.routes.js";
+
 
 dotenv.config();
 const app = express();
@@ -39,6 +42,8 @@ app.use("/api/auth", authRoutes);
 app.use("/api/clientes", clientesRoutes);
 app.use("/api/servicos", servicosRoutes);
 app.use("/api/agendamentos", agendamentosRoutes);
+app.use("/api/calendar", calendarRoutes);
+app.use("/api/calendar/admin-tools", adminCalendarRoutes);
 
 // handler de erro (sempre por último)
 app.use(errorHandler);

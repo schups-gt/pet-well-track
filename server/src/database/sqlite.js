@@ -80,6 +80,46 @@ function ensureTables() {
       observacoes TEXT
     );
   `);
+
+  // PROFISSIONAL.DB: coluna de duração nos serviços
+try {
+  dbs.profissional.exec(`ALTER TABLE servicos ADD COLUMN duration_min INTEGER DEFAULT 30;`);
+  dbs.profissional.exec(`CREATE INDEX IF NOT EXISTS idx_servicos_owner ON servicos(owner_id);`);
+} catch (e) {
+  if (!String(e?.message||"").includes("duplicate column name")) throw e;
+}
+
+// PROFISSIONAL.DB: horários de trabalho semanais
+dbs.profissional.exec(`
+  CREATE TABLE IF NOT EXISTS horarios_trabalho (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    owner_id INTEGER NOT NULL,
+    dow TEXT NOT NULL,       -- 'mon','tue','wed','thu','fri','sat','sun'
+    janela TEXT NOT NULL     -- ex.: '08:00-12:00'
+  );
+  CREATE INDEX IF NOT EXISTS idx_work_owner_dow ON horarios_trabalho(owner_id, dow);
+`);
+
+// AGENDAMENTO.DB: bloqueios que só aparecem na agenda admin
+dbs.agendamento.exec(`
+  CREATE TABLE IF NOT EXISTS bloqueios (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    owner_id INTEGER NOT NULL,
+    start_iso TEXT NOT NULL,
+    end_iso   TEXT NOT NULL,
+    reason    TEXT,
+    kind      TEXT DEFAULT 'admin'
+  );
+  CREATE INDEX IF NOT EXISTS idx_bloq_owner_start ON bloqueios(owner_id, start_iso);
+  CREATE INDEX IF NOT EXISTS idx_bloq_owner_end   ON bloqueios(owner_id, end_iso);
+`);
+
+// Índices úteis na agenda
+dbs.agendamento.exec(`
+  CREATE INDEX IF NOT EXISTS idx_agend_owner_data ON agendamentos(owner_id, data_hora);
+  CREATE INDEX IF NOT EXISTS idx_agend_owner_status ON agendamentos(owner_id, status);
+`);
+
 }
 
 // Garante que todas as tabelas sejam criadas
