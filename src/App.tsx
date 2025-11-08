@@ -55,14 +55,7 @@ const App = () => (
                 </PrivateRoute>
               } 
             />
-            <Route 
-              path="/perfil" 
-              element={
-                <PrivateRoute>
-                  <Perfil />
-                </PrivateRoute>
-              } 
-            />
+            <Route path="/perfil" element={<Perfil />} />
             <Route path="/nossaequipe" element={<NossaEquipe />} />
             <Route path="/contato" element={<Contato />} />
             <Route path="/redefinir-senha/:token" element={<ResetarSenha />} />
