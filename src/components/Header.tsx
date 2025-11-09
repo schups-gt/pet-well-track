@@ -42,6 +42,9 @@ const Header = () => {
           <Link to="/nossaequipe" className="text-muted-foreground hover:text-foreground transition-colors">
             Nossa Equipe
           </Link>
+          <Link to="/calendario" className="text-muted-foreground hover:text-foreground transition-colors">
+            Calendário
+          </Link>
         </nav>
 
         <div className="flex items-center gap-4">

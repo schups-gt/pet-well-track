@@ -5,10 +5,11 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
-import Contato from './pages/Contato';
+import Contato from './pages/contato';
 import MeusPets from './pages/meuspets';
 import Serviços from './pages/serviços';
-import NossaEquipe from './pages/NossaEquipe';
+import NossaEquipe from './pages/nossaequipe';
+import Calendario from './pages/Calendario';
 import Entrar from './pages/Entrar';
 import Registrar from "./pages/Registrar";
 import EsqueciSenha from "./pages/EsqueciSenha";
@@ -58,6 +59,7 @@ const App = () => (
             <Route path="/perfil" element={<Perfil />} />
             <Route path="/nossaequipe" element={<NossaEquipe />} />
             <Route path="/contato" element={<Contato />} />
+            <Route path="/calendario" element={<Calendario />} />
             <Route path="/redefinir-senha/:token" element={<ResetarSenha />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
