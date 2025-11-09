@@ -42,17 +42,22 @@ const Header = () => {
           <Link to="/nossaequipe" className="text-muted-foreground hover:text-foreground transition-colors">
             Nossa Equipe
           </Link>
+          {user && (
+            <Link to="/calendario" className="text-muted-foreground hover:text-foreground transition-colors">
+              Meu Calendário
+            </Link>
+          )}
+          {user && (user.role === "vet" || user.role === "admin") && (
+            <Link to="/calendario-vet" className="text-muted-foreground hover:text-foreground transition-colors">
+              Calendário Vet
+            </Link>
+          )}
         </nav>
 
         <div className="flex items-center gap-4">
           {user ? (
             <>
-              <span className="hidden md:inline-flex">Olá, {user.nome}</span>
-              <img
-                src={user.foto || "/default-avatar.png"}
-                alt="avatar"
-                className="w-8 h-8 rounded-full border"
-              />
+              <span className="hidden md:inline-flex">Olá, {user.name}</span>
               <Button variant="outline" onClick={logout}>
                 Sair
               </Button>

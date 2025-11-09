@@ -84,7 +84,16 @@ export default function Perfil() {
         
         // NOVO: Atualiza o contexto global de autenticação com os novos dados
         // Isso fará com que o Header e o Perfil reflitam as mudanças instantaneamente.
-        login({ ...user, name: updatedUser.name }); 
+        const currentToken = localStorage.getItem("token") || "";
+        if (user) {
+          login({ 
+            id: user.id,
+            name: updatedUser.name || user.name,
+            email: user.email,
+            role: user.role,
+            owner_id: user.owner_id
+          }, currentToken);
+        }
 
         toast({
           title: "Perfil atualizado!",

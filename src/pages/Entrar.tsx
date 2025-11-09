@@ -1,12 +1,22 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import api from '../lib/api';
-
+import { useAuth } from '../context/AuthContext';
 
 const LoginPage = () => {
+  const navigate = useNavigate();
+  const { login, user } = useAuth();
   const [email, setEmail] = useState('');
   const [senha, setSenha] = useState('');
-  const [message, setMessage] = useState('');      // mensagem que vai aparecer
-  const [messageType, setMessageType] = useState(''); // "error" ou "success"
+  const [message, setMessage] = useState('');
+  const [messageType, setMessageType] = useState('');
+
+  // Redireciona se já estiver logado
+  useEffect(() => {
+    if (user) {
+      navigate('/');
+    }
+  }, [user, navigate]);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -14,9 +24,12 @@ const LoginPage = () => {
       const res = await api.post("/login", { email, password: senha });
       setMessage("Login realizado com sucesso!");
       setMessageType("success");
-      localStorage.setItem("user", JSON.stringify(res.data.data));
+      
+      // Usa o método login do AuthContext
+      login(res.data.data, res.data.data.token);
+      
       setTimeout(() => {
-        window.location.href = "/"; // redireciona após 1s
+        navigate('/');
       }, 1000);
     } catch (err: any) {
       setMessage(err.response?.data?.error || "Erro ao fazer login");
