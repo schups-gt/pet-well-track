@@ -31,12 +31,30 @@ export async function getByIdController(req, res, next) {
 // POST /api/pets
 export async function createController(req, res, next) {
   try {
-    const ownerId = req.ownerId;
-    const { tutor_id, nome, especie, idade } = req.body;
-    if (!tutor_id || !nome) {
-      return res.status(400).json({ success: false, error: "Campos obrigatórios: tutor_id, nome" });
+    const ownerId = req.ownerId ?? req.user?.owner_id ?? 1; // fallback seguro
+    const tutor_id = req.user?.id;                           // vem do JWT
+
+    const { nome, especie, idade } = req.body;
+
+    if (!nome) {
+      return res
+        .status(400)
+        .json({ success: false, error: "Campo obrigatório: nome" });
     }
-    const data = await createPet({ ownerId, tutor_id, nome, especie, idade });
+
+    // idade chega como string no front; normalizar para número ou null
+    const idadeNum = (idade !== undefined && idade !== null && `${idade}`.trim() !== "")
+      ? Number(idade)
+      : null;
+
+    const data = await createPet({
+      ownerId,
+      tutor_id,
+      nome,
+      especie: especie ?? null,
+      idade: isNaN(idadeNum) ? null : idadeNum,
+    });
+
     res.status(201).json({ success: true, data });
   } catch (err) { next(err); }
 }
@@ -46,8 +64,21 @@ export async function updateController(req, res, next) {
   try {
     const ownerId = req.ownerId;
     const id = Number(req.params.id);
-    const { tutor_id, nome, especie, idade } = req.body;
-    const data = await updatePet({ ownerId, id, tutor_id, nome, especie, idade });
+    const { nome, especie, idade } = req.body;
+
+    const idadeNum = (idade !== undefined && idade !== null && `${idade}`.trim() !== "")
+      ? Number(idade)
+      : null;
+
+    const data = await updatePet({
+      ownerId,
+      id,
+      tutor_id: req.user?.id ?? null,
+      nome,
+      especie: especie ?? null,
+      idade: isNaN(idadeNum) ? null : idadeNum,
+    });
+
     if (!data) return res.status(404).json({ success: false, error: "Pet não encontrado" });
     res.json({ success: true, data });
   } catch (err) { next(err); }
