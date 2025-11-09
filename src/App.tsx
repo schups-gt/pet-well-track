@@ -19,6 +19,7 @@ import CadastrarPet from "./pages/CadastroPet";
 import Perfil from "./pages/Perfil";
 import { AuthProvider } from "./context/AuthContext";
 import PrivateRoute from "./components/PrivateRoute";
+import VetRoute from "./components/VetRoute";
 
 
 
@@ -60,8 +61,22 @@ const App = () => (
             <Route path="/perfil" element={<Perfil />} />
             <Route path="/nossaequipe" element={<NossaEquipe />} />
             <Route path="/contato" element={<Contato />} />
-            <Route path="/calendario" element={<Calendario />} />
-            <Route path="/calendario-vet" element={<CalendarioVet />} />
+            <Route 
+              path="/calendario" 
+              element={
+                <PrivateRoute>
+                  <Calendario />
+                </PrivateRoute>
+              } 
+            />
+            <Route 
+              path="/calendario-vet" 
+              element={
+                <VetRoute>
+                  <CalendarioVet />
+                </VetRoute>
+              } 
+            />
             <Route path="/redefinir-senha/:token" element={<ResetarSenha />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />

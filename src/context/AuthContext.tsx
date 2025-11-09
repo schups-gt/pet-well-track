@@ -1,20 +1,42 @@
 import { createContext, useContext, useState, useEffect } from "react";
 
-const AuthContext = createContext(null);
+interface User {
+  id: number;
+  name: string;
+  email: string;
+  role: string;
+  owner_id: number;
+  token?: string;
+}
 
+interface AuthContextType {
+  user: User | null;
+  token: string | null;
+  login: (userData: User, jwt: string) => void;
+  logout: () => void;
+}
 
-export const AuthProvider = ({ children }) => {
-  const [token, setToken] = useState(null);
-  const [user, setUser] = useState(null);
+const AuthContext = createContext<AuthContextType | null>(null);
+
+export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
+  const [token, setToken] = useState<string | null>(null);
+  const [user, setUser] = useState<User | null>(null);
 
   useEffect(() => {
     const savedUser = localStorage.getItem("user");
     const savedToken = localStorage.getItem("token");
-    if (savedUser) setUser(JSON.parse(savedUser));
+    if (savedUser) {
+      try {
+        setUser(JSON.parse(savedUser));
+      } catch (e) {
+        console.error("Erro ao carregar usuário:", e);
+        localStorage.removeItem("user");
+      }
+    }
     if (savedToken) setToken(savedToken);
   }, []);
 
-  const login = (userData, jwt) => {
+  const login = (userData: User, jwt: string) => {
     setUser(userData);
     setToken(jwt);
     localStorage.setItem("user", JSON.stringify(userData));
@@ -28,12 +50,17 @@ export const AuthProvider = ({ children }) => {
     localStorage.removeItem("token");
   };
 
-
   return (
-    <AuthContext.Provider value={{ user, login, logout }}>
+    <AuthContext.Provider value={{ user, token, login, logout }}>
       {children}
     </AuthContext.Provider>
   );
 };
 
-export const useAuth = () => useContext(AuthContext);
+export const useAuth = () => {
+  const context = useContext(AuthContext);
+  if (!context) {
+    throw new Error("useAuth deve ser usado dentro de AuthProvider");
+  }
+  return context;
+};
