@@ -45,6 +45,11 @@ const Header = () => {
           <Link to="/calendario" className="text-muted-foreground hover:text-foreground transition-colors">
             Calendário
           </Link>
+          {user?.role === "vet" || user?.role === "admin" ? (
+            <Link to="/calendario-vet" className="text-muted-foreground hover:text-foreground transition-colors">
+              Calendário Vet
+            </Link>
+          ) : null}
         </nav>
 
         <div className="flex items-center gap-4">

@@ -10,6 +10,7 @@ import MeusPets from './pages/meuspets';
 import Serviços from './pages/serviços';
 import NossaEquipe from './pages/nossaequipe';
 import Calendario from './pages/Calendario';
+import CalendarioVet from './pages/CalendarioVet';
 import Entrar from './pages/Entrar';
 import Registrar from "./pages/Registrar";
 import EsqueciSenha from "./pages/EsqueciSenha";
@@ -60,6 +61,7 @@ const App = () => (
             <Route path="/nossaequipe" element={<NossaEquipe />} />
             <Route path="/contato" element={<Contato />} />
             <Route path="/calendario" element={<Calendario />} />
+            <Route path="/calendario-vet" element={<CalendarioVet />} />
             <Route path="/redefinir-senha/:token" element={<ResetarSenha />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
