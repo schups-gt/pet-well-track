@@ -22,10 +22,9 @@ const app = express();
 // Configuração do CORS
 app.use(cors({
   origin: "http://localhost:8080",
-  credentials: true,
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization']
+  credentials: true
 }));
+
 
 // Middlewares essenciais
 app.use(express.json());
@@ -45,7 +44,7 @@ app.use("/api/servicos", servicosRoutes);
 app.use("/api/agendamentos", agendamentosRoutes);
 app.use("/api/calendar", calendarRoutes);
 app.use("/api/admin/calendar", adminCalendarRoutes);
-app.use("/api/pets", petsRoutes);
+app.use("/api/auth/pets", petsRoutes);
 
 // handler de erro (sempre por último)
 app.use(errorHandler);

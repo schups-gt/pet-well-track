@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import Header from '@/components/Header';
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import api from "@/Services/api/api";
+import api from '../lib/api';
 import React from 'react';
 import Hero from '@/components/Hero';
 import Features from '@/components/Features';
@@ -28,16 +28,14 @@ export default function MeusPets() {
 
     (async () => {
       try {
-        // use sempre o axios com interceptor (envia Authorization: Bearer <token>)
+        // CHAME a rota com /api
         const res = await api.get("/pets");
-        // algumas APIs respondem { success, data }, outras já devolvem o array
         const data = res.data?.data ?? res.data;
         const arr: Pet[] = Array.isArray(data) ? data : [];
         if (alive) setPets(arr);
       } catch (err: any) {
-        // se não estiver autenticado, redireciona para login
         if (err?.response?.status === 401) {
-          navigate("/entrar");
+          navigate("/entrar"); // sem token ou token inválido
         }
         if (alive) setPets([]); // evita quebra do map
         console.error("Erro ao carregar pets", err);
@@ -46,9 +44,7 @@ export default function MeusPets() {
       }
     })();
 
-    return () => {
-      alive = false;
-    };
+    return () => { alive = false; };
   }, [navigate]);
 
   return (

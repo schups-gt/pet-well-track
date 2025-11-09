@@ -17,6 +17,7 @@ import { toast } from "sonner";
 import Header from "@/components/Header";
 import { PawPrint } from "lucide-react";
 import InputMask from "react-input-mask";
+import api from "../lib/api";
 
 const petFormSchema = z.object({
   petName: z.string().trim().min(2, "Nome do pet deve ter pelo menos 2 caracteres").max(50),
@@ -56,7 +57,7 @@ const CadastrarPet = () => {
     
   setIsSubmitting(true);
   try {
-    const response = await fetch("http://localhost:3000/api/pets", {
+    const response = await fetch("http://localhost:3000/api/auth/pets", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -89,7 +90,6 @@ const CadastrarPet = () => {
     setIsSubmitting(false);
   }
 };
-
 
   return (
     <div className="min-h-screen bg-background">

@@ -1,4 +1,3 @@
-// server/src/routes/pets.routes.js
 import { Router } from "express";
 import { verifyJWT } from "../middleware/verifyJWT.js";
 import {
@@ -6,11 +5,12 @@ import {
   getByIdController,
   createController,
   updateController,
-  deleteController,
+  deleteController
 } from "../controllers/pets.controller.js";
 
 const router = Router();
-router.use(verifyJWT);
+
+router.use(verifyJWT); // precisa estar ANTES das rotas
 
 router.get("/", listController);
 router.get("/:id", getByIdController);

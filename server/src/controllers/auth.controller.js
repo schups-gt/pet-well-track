@@ -101,28 +101,28 @@ export async function registerController(req, res, next) {
 export async function loginController(req, res, next) {
   try {
     const { email, password } = req.body;
-
-    if (!email || !password) {
+    if (!email || !password)
       return res.status(400).json({ success: false, error: "Informe email e password" });
-    }
 
     const user = await findUserByEmail(email);
-    if (!user) {
-      return res.status(401).json({ success: false, error: "Credenciais inválidas" });
-    }
+    if (!user) return res.status(401).json({ success: false, error: "Credenciais inválidas" });
 
     const ok = await bcrypt.compare(password, user.password_hash);
-    if (!ok) {
-      return res.status(401).json({ success: false, error: "Credenciais inválidas" });
-    }
+    if (!ok) return res.status(401).json({ success: false, error: "Credenciais inválidas" });
 
     const token = jwt.sign(
       { userId: user.id, role: user.role, ownerId: user.owner_id },
-      SECRET,
-      { expiresIn: EXPIRES_IN }
+      process.env.JWT_SECRET,
+      { expiresIn: process.env.JWT_EXPIRES_IN || "2h" }
     );
 
-    res.cookie("token", token, COOKIE_OPTIONS);
+    res.cookie("token", token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
+      maxAge: 24 * 60 * 60 * 1000
+    });
+
     return res.json({
       success: true,
       data: {
@@ -131,8 +131,8 @@ export async function loginController(req, res, next) {
         email: user.email,
         role: user.role,
         owner_id: user.owner_id,
-        token, // devolve também no login
-      },
+        token // <- importante para o front guardar
+      }
     });
   } catch (err) {
     next(err);

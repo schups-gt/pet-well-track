@@ -49,7 +49,7 @@ export default function Calendario() {
       
       // Busca agendamentos do dia selecionado
       const response = await axios.get(
-        `http://localhost:3000/api/agendamentos`,
+        `http://localhost:3000/agendamentos`,
         {
           params: {
             from: `${dateISO}T00:00:00.000Z`,
