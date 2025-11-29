@@ -1,10 +1,55 @@
-import React from 'react';
+
+import React, { useState } from 'react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Heart, Stethoscope, Zap, Magnet, Droplet, Activity, Leaf, Pill, HandMetal, Waves, Sparkles } from 'lucide-react';
+import { useAuth } from '@/context/AuthContext';
+import { useNavigate } from 'react-router-dom';
+import { toast } from 'sonner';
+import api from '@/lib/api';
 
 const Serviços = () => {
+  const { user } = useAuth();
+  const navigate = useNavigate();
+  const [isChecking, setIsChecking] = useState(false);
+
+  const handleAgendarAvaliacao = async () => {
+    // Verifica se está logado
+    if (!user) {
+      toast.error('Você precisa estar logado para agendar uma avaliação');
+      navigate('/entrar');
+      return;
+    }
+
+    setIsChecking(true);
+    try {
+      // Verifica se tem pets cadastrados
+      const res = await api.get('/pets');
+      const data = res.data?.data ?? res.data;
+      const pets = Array.isArray(data) ? data : [];
+
+      if (pets.length === 0) {
+        toast.error('Você precisa cadastrar pelo menos um pet antes de agendar');
+        navigate('/cadastro-pet');
+        return;
+      }
+
+      // Se passou nas verificações, redireciona para o calendário
+      toast.success('Redirecionando para agendamento...');
+      navigate('/calendario');
+    } catch (error: any) {
+      if (error?.response?.status === 401) {
+        toast.error('Sessão expirada. Faça login novamente');
+        navigate('/entrar');
+      } else {
+        toast.error('Erro ao verificar pets cadastrados');
+      }
+    } finally {
+      setIsChecking(false);
+    }
+  };
+
   const servicos = [
     {
       icon: Stethoscope,
@@ -143,12 +188,13 @@ const Serviços = () => {
             Entre em contato conosco para agendar uma avaliação completa e iniciar o tratamento 
             personalizado que seu pet merece
           </p>
-          <a 
-            href="/Calendario" 
-            className="inline-block bg-health-gradient text-primary-foreground font-semibold px-8 py-4 rounded-lg hover:opacity-90 transition-opacity duration-300 shadow-soft"
+          <button 
+            onClick={handleAgendarAvaliacao}
+            disabled={isChecking}
+            className="inline-block bg-health-gradient text-primary-foreground font-semibold px-8 py-4 rounded-lg hover:opacity-90 transition-opacity duration-300 shadow-soft disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            Agendar Avaliação
-          </a>
+            {isChecking ? 'Verificando...' : 'Agendar Avaliação'}
+          </button>
         </div>
       </section>
 
