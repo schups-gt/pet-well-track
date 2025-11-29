@@ -11,6 +11,7 @@ import Serviços from './pages/serviços';
 import NossaEquipe from './pages/nossaequipe';
 import Calendario from './pages/Calendario';
 import CalendarioVet from './pages/CalendarioVet';
+import DashboardAdmin from './pages/DashboardAdmin';
 import Entrar from './pages/Entrar';
 import Registrar from "./pages/Registrar";
 import EsqueciSenha from "./pages/EsqueciSenha";
@@ -74,6 +75,14 @@ const App = () => (
               element={
                 <VetRoute>
                   <CalendarioVet />
+                </VetRoute>
+              } 
+            />
+            <Route 
+              path="/dashboard-admin" 
+              element={
+                <VetRoute>
+                  <DashboardAdmin />
                 </VetRoute>
               } 
             />

@@ -48,9 +48,14 @@ const Header = () => {
             </Link>
           )}
           {user && (user.role === "vet" || user.role === "admin") && (
-            <Link to="/calendario-vet" className="text-muted-foreground hover:text-foreground transition-colors">
-              Calendário Vet
-            </Link>
+            <>
+              <Link to="/dashboard-admin" className="text-muted-foreground hover:text-foreground transition-colors">
+                Dashboard
+              </Link>
+              <Link to="/calendario-vet" className="text-muted-foreground hover:text-foreground transition-colors">
+                Calendário Vet
+              </Link>
+            </>
           )}
         </nav>
 
