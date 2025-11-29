@@ -5,12 +5,9 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
-import Contato from './pages/contato';
 import MeusPets from './pages/meuspets';
 import Serviços from './pages/serviços';
 import NossaEquipe from './pages/nossaequipe';
-import Calendario from './pages/Calendario';
-import CalendarioVet from './pages/CalendarioVet';
 import Entrar from './pages/Entrar';
 import Registrar from "./pages/Registrar";
 import EsqueciSenha from "./pages/EsqueciSenha";
@@ -19,12 +16,13 @@ import CadastrarPet from "./pages/CadastroPet";
 import Perfil from "./pages/Perfil";
 import { AuthProvider } from "./context/AuthContext";
 import PrivateRoute from "./components/PrivateRoute";
-import VetRoute from "./components/VetRoute";
+import Calendario from "./pages/Calendario";
+import DashboardAdmin from "./pages/DashboardAdmin";
 
-
-
-
-  
+// 1. IMPORTAR O NOVO COMPONENTE
+import CalendarioVet from "./pages/CalendarioVet";
+// (Vamos assumir que Calendario.tsx não é uma página, mas um componente, 
+// ou se for, você precisa adicionar a rota para ele também)
 
 const queryClient = new QueryClient();
 
@@ -58,25 +56,27 @@ const App = () => (
                 </PrivateRoute>
               } 
             />
-            <Route path="/perfil" element={<Perfil />} />
-            <Route path="/nossaequipe" element={<NossaEquipe />} />
-            <Route path="/contato" element={<Contato />} />
+            {/* 2. ADICIONAR A NOVA ROTA (PROTEGIDA) */}
             <Route 
-              path="/calendario" 
+              path="/calendariovet" 
               element={
                 <PrivateRoute>
-                  <Calendario />
+                  <CalendarioVet />
                 </PrivateRoute>
               } 
             />
-            <Route 
-              path="/calendario-vet" 
-              element={
-                <VetRoute>
-                  <CalendarioVet />
-                </VetRoute>
-              } 
-            />
+            <Route path="/calendario" element={
+              <PrivateRoute>
+                <Calendario />
+              </PrivateRoute>
+            } />
+            <Route path="/dashboardadmin" element={
+              <PrivateRoute>
+                <DashboardAdmin />
+              </PrivateRoute>
+            } />
+            <Route path="/perfil" element={<Perfil />} />
+            <Route path="/nossaequipe" element={<NossaEquipe />} />
             <Route path="/redefinir-senha/:token" element={<ResetarSenha />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
