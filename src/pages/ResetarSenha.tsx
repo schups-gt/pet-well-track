@@ -13,7 +13,7 @@ const RedefinirSenha = () => {
     if (senha !== confirmar) return setMensagem("As senhas não coincidem.");
 
     try {
-      const res = await api.post(`/reset-password/${token}`, { newPassword: senha });
+      const res = await api.post(`/auth/reset-password/${token}`, { newPassword: senha });
       setMensagem(res.data.message || "Senha redefinida com sucesso!");
     } catch (err: any) {
       setMensagem(err.response?.data?.error || "Erro ao redefinir senha.");

@@ -7,6 +7,8 @@ import {
   meController,
   resetPasswordController,
   resetPasswordConfirmController,
+  verifyEmailController,
+  resendVerificationEmailController,
 } from "../controllers/auth.controller.js";
 import { verifyJWT } from "../middleware/verifyJWT.js"; // JWT
 
@@ -17,6 +19,8 @@ router.post("/register", registerController);
 router.post("/login", loginController);
 router.post("/reset", resetPasswordController);
 router.post("/reset-password/:token", resetPasswordConfirmController);
+router.post("/verify-email/:token", verifyEmailController);
+router.post("/resend-verification", resendVerificationEmailController);
 
 // “logout” stateless (só 204)
 router.post("/logout", logoutController);

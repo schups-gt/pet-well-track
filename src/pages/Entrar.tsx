@@ -21,7 +21,7 @@ const LoginPage = () => {
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      const res = await api.post("/login", { email, password: senha });
+      const res = await api.post("/auth/login", { email, password: senha });
       setMessage("Login realizado com sucesso!");
       setMessageType("success");
       
@@ -32,8 +32,17 @@ const LoginPage = () => {
         navigate('/');
       }, 1000);
     } catch (err: any) {
-      setMessage(err.response?.data?.error || "Erro ao fazer login");
+      const errorCode = err.response?.data?.code;
+      const errorMessage = err.response?.data?.error || "Erro ao fazer login";
+      
+      setMessage(errorMessage);
       setMessageType("error");
+
+      // Se for erro de email não verificado, mostrar botão para reenviar
+      if (errorCode === 'EMAIL_NOT_VERIFIED') {
+        // Armazenar o email para a próxima página
+        setEmail(email);
+      }
     }
   };
 
@@ -43,18 +52,28 @@ const LoginPage = () => {
         <h1 className="text-3xl font-bold text-center text-blue-600 mb-6">Login</h1>
         
         {message && (
-          <div className={`mb-4 text-center font-semibold ${
-            messageType === "error" ? "text-red-500" : "text-green-500"
+          <div className={`mb-4 p-3 rounded text-center font-semibold text-sm ${
+            messageType === "error" ? "text-red-600 bg-red-50" : "text-green-600 bg-green-50"
           }`}>
             {message}
+            {messageType === "error" && message.includes("verifique seu email") && (
+              <div className="mt-2">
+                <button
+                  onClick={() => navigate('/reenviar-verificacao', { state: { email } })}
+                  className="mt-2 text-red-700 font-semibold underline hover:no-underline"
+                >
+                  Reenviar Email de Verificação
+                </button>
+              </div>
+            )}
           </div>
         )}
 
-           <form 
-            onSubmit={handleLogin} 
-            className="space-y-4" 
-            autoComplete={messageType === "error" ? "off" : "on"}
-            >
+        <form 
+          onSubmit={handleLogin} 
+          className="space-y-4" 
+          autoComplete={messageType === "error" ? "off" : "on"}
+        >
           <div>
             <label htmlFor="email" className="block text-sm font-medium text-gray-700">E-mail</label>
             <input

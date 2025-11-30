@@ -1,4 +1,4 @@
-import { db } from "../database/sqlite.js";
+import { dbs } from "../database/sqlite.js";
 
 export async function list({ ownerId, search }) {
   if (search) {

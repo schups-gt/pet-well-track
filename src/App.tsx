@@ -18,11 +18,10 @@ import { AuthProvider } from "./context/AuthContext";
 import PrivateRoute from "./components/PrivateRoute";
 import Calendario from "./pages/Calendario";
 import DashboardAdmin from "./pages/DashboardAdmin";
-
-// 1. IMPORTAR O NOVO COMPONENTE
 import CalendarioVet from "./pages/CalendarioVet";
-// (Vamos assumir que Calendario.tsx não é uma página, mas um componente, 
-// ou se for, você precisa adicionar a rota para ele também)
+import VerificarEmail from "./pages/VerificarEmail";
+import VerificacaoPendente from "./pages/VerificacaoPendente";
+import ReenviarVerificacao from "./pages/ReenviarVerificacao";
 
 const queryClient = new QueryClient();
 
@@ -39,6 +38,9 @@ const App = () => (
             <Route path="/Entrar" element={<Entrar />} />
             <Route path="/registrar" element={<Registrar />} />
             <Route path="/esqueci-senha" element={<EsqueciSenha />} />
+            <Route path="/verificacao-pendente" element={<VerificacaoPendente />} />
+            <Route path="/verificar-email/:token" element={<VerificarEmail />} />
+            <Route path="/reenviar-verificacao" element={<ReenviarVerificacao />} />
             <Route path="/serviços" element={<Serviços />} />
             <Route
               path="/meuspets"

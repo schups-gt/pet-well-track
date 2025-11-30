@@ -2,6 +2,8 @@ import React, { useState } from "react";
 import api from "../lib/api";
 import PawPatternBackground from '@/components/ui/PawPatternBackground';
 import { useAuth } from "../context/AuthContext";
+import { useNavigate } from "react-router-dom";
+import { validateEmail } from "../lib/email-validation";
 
 const RegistrarPage = () => {
   const [name, setName] = useState("");
@@ -9,29 +11,76 @@ const RegistrarPage = () => {
   const [senha, setSenha] = useState("");
   const [message, setMessage] = useState("");
   const [messageType, setMessageType] = useState(""); // "error" ou "success"
+  const [emailError, setEmailError] = useState(""); // Erro específico de email
   const { login } = useAuth(); // pega a função login do contexto
+  const navigate = useNavigate();
+
+  // Valida o email em tempo real
+  const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const emailValue = e.target.value;
+    setEmail(emailValue);
+    
+    if (!emailValue) {
+      setEmailError("");
+      return;
+    }
+
+    const validation = validateEmail(emailValue);
+    if (!validation.valid) {
+      setEmailError(validation.error || "Email inválido");
+    } else {
+      setEmailError("");
+    }
+  };
 
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    // Validar email antes de enviar
+    const validation = validateEmail(email);
+    if (!validation.valid) {
+      setMessage("Por favor, use um email com domínio permitido");
+      setMessageType("error");
+      return;
+    }
+
+    if (!name.trim()) {
+      setMessage("Por favor, informe seu nome");
+      setMessageType("error");
+      return;
+    }
+
+    if (senha.length < 6) {
+      setMessage("Senha deve ter pelo menos 6 caracteres");
+      setMessageType("error");
+      return;
+    }
+
     try {
       console.log('Enviando dados de registro:', { name, email, password: '***' });
-      const res = await api.post("/register", { name, email, password: senha });
+      const res = await api.post("/auth/register", { 
+        name, 
+        email, 
+        password: senha 
+      });
       
-      if (res.data.success) {
-        // Armazena os dados do usuário
-        localStorage.setItem("user", JSON.stringify(res.data.data));
-        setMessage("Registrado com sucesso!");
+      console.log('Resposta do registro:', res.data);
+      
+      if (res.data.success || res.status === 201) {
+        setMessage("Registrado com sucesso! Verifique seu email.");
         setMessageType("success");
         
-        // Redireciona para a página de login
+        // Redireciona para página de verificação pendente
         setTimeout(() => {
-          window.location.href = "/entrar";
+          navigate("/verificacao-pendente", { state: { email } });
         }, 1500);
       } else {
         throw new Error(res.data.error || "Erro ao registrar");
       }
     } catch (err: any) {
-      setMessage(err.response?.data?.error || "Erro ao registrar");
+      console.error('Erro no registro:', err);
+      const errorMessage = err.response?.data?.error || err.message || "Erro ao registrar";
+      setMessage(errorMessage);
       setMessageType("error");
     }
   };
@@ -43,7 +92,7 @@ const RegistrarPage = () => {
         <h1 className="text-3xl font-bold text-center text-purple-600 mb-6">Criar conta</h1>
 
         {message && (
-          <div className={`mb-4 text-center font-semibold ${
+          <div className={`mb-4 text-center font-semibold text-sm ${
             messageType === "error" ? "text-red-500" : "text-green-500"
           }`}>
             {message}
@@ -68,11 +117,16 @@ const RegistrarPage = () => {
               type="email"
               id="email"
               value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              onChange={handleEmailChange}
               required
               autoComplete="off"
-              className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-teal-500 focus:border-teal-500"
+              className={`mt-1 block w-full px-4 py-2 border rounded-md shadow-sm focus:ring-teal-500 focus:border-teal-500 ${
+                emailError ? "border-red-500" : "border-gray-300"
+              }`}
             />
+            {emailError && (
+              <p className="mt-1 text-sm text-red-500">{emailError}</p>
+            )}
           </div>
 
           <div>
@@ -90,7 +144,8 @@ const RegistrarPage = () => {
 
           <button
             type="submit"
-            className="bg-gradient-to-r from-purple-500 to-blue-400 w-full py-2 px-4 rounded-full text-white font-semibold hover:opacity-90 transition duration-300"
+            disabled={!!emailError}
+            className="bg-gradient-to-r from-purple-500 to-blue-400 w-full py-2 px-4 rounded-full text-white font-semibold hover:opacity-90 transition duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
           >
             Registrar
           </button>

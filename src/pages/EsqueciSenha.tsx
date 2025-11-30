@@ -9,7 +9,7 @@ const EsqueciSenha = () => {
   const handleReset = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      await api.post("/reset", { email });
+      await api.post("/auth/forgot-password", { email });
       setMessage("Se o email existir, enviaremos um link de redefinição.");
       setMessageType("success");
     } catch {

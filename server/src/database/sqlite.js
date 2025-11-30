@@ -51,6 +51,11 @@ function ensureTables() {
   // users.role e users.owner_id (idempotente)
   try { dbs.cliente.exec(`ALTER TABLE users ADD COLUMN role TEXT DEFAULT 'user';`); } catch {}
   try { dbs.cliente.exec(`ALTER TABLE users ADD COLUMN owner_id INTEGER DEFAULT 1;`); } catch {}
+  
+  // Verificação de email
+  try { dbs.cliente.exec(`ALTER TABLE users ADD COLUMN email_verified INTEGER DEFAULT 0;`); } catch {}
+  try { dbs.cliente.exec(`ALTER TABLE users ADD COLUMN verification_token TEXT;`); } catch {}
+  try { dbs.cliente.exec(`ALTER TABLE users ADD COLUMN verification_expires INTEGER;`); } catch {}
 
   // clientes: colunas estendidas (tentativa por ALTER; se falhar, migração abaixo resolve)
   try { dbs.cliente.exec(`ALTER TABLE clientes ADD COLUMN endereco TEXT;`); } catch {}

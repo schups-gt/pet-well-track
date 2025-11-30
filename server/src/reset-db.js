@@ -1,5 +1,5 @@
 // server/src/reset-db.js
-import { db } from "./database/sqlite.js";
+import { dbs } from "./database/sqlite.js";
 
 console.log("🧹 Limpando tabelas...");
 

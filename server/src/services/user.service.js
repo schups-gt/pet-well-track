@@ -1,4 +1,4 @@
-import { db } from "../database/sqlite.js";
+import { dbs } from "../database/sqlite.js";
 
 /**
  * OBS:
@@ -8,9 +8,9 @@ import { db } from "../database/sqlite.js";
 
 export async function findUserByEmail(email) {
   return (
-    db
+    dbs.cliente
       .prepare(`
-        SELECT id, name, email, password_hash, role, owner_id
+        SELECT id, name, email, password_hash, role, owner_id, email_verified
         FROM users
         WHERE email = ?
       `)
@@ -20,7 +20,7 @@ export async function findUserByEmail(email) {
 
 export async function findUserById(id) {
   return (
-    db
+    dbs.cliente
       .prepare(`
         SELECT id, name, email, role, owner_id
         FROM users
@@ -38,7 +38,7 @@ export async function createUser({
   owner_id = 1,
 }) {
   try {
-    const stmt = db.prepare(`
+    const stmt = dbs.cliente.prepare(`
       INSERT INTO users (name, email, password_hash, role, owner_id)
       VALUES (?, ?, ?, ?, ?)
     `);
@@ -58,7 +58,7 @@ export async function createUser({
 }
 
 export async function updateUserToken(id, token, expires) {
-  db.prepare(
+  dbs.cliente.prepare(
     `UPDATE users SET reset_token = ?, reset_expires = ? WHERE id = ?`
   ).run(token, expires, id);
 }
@@ -66,7 +66,7 @@ export async function updateUserToken(id, token, expires) {
 export async function findUserByResetToken(token) {
   const now = Date.now();
   return (
-    db
+    dbs.cliente
       .prepare(
         `SELECT * FROM users WHERE reset_token = ? AND reset_expires > ?`
       )
@@ -75,9 +75,75 @@ export async function findUserByResetToken(token) {
 }
 
 export async function updateUserPassword(id, password_hash) {
-  db.prepare(
+  dbs.cliente.prepare(
     `UPDATE users
      SET password_hash = ?, reset_token = NULL, reset_expires = NULL
      WHERE id = ?`
   ).run(password_hash, id);
+}
+
+/**
+ * Atualiza token e expiration de verificação de email
+ */
+export async function updateEmailVerificationToken(id, token, expires) {
+  dbs.cliente.prepare(
+    `UPDATE users SET verification_token = ?, verification_expires = ? WHERE id = ?`
+  ).run(token, expires, id);
+}
+
+/**
+ * Verifica se um usuário tem email confirmado
+ */
+export async function isEmailVerified(id) {
+  const user = dbs.cliente.prepare(
+    `SELECT email_verified FROM users WHERE id = ?`
+  ).get(id);
+  
+  return user ? user.email_verified === 1 : false;
+}
+
+/**
+ * Busca usuário pelo token de verificação
+ */
+export async function findUserByVerificationToken(token) {
+  const now = Date.now();
+  console.log(`[USER.SERVICE] Buscando usuário com token: ${token.substring(0, 20)}...`);
+  console.log(`[USER.SERVICE] Timestamp atual: ${now}`);
+  
+  const user = dbs.cliente
+    .prepare(
+      `SELECT id, email, email_verified FROM users 
+       WHERE verification_token = ? AND verification_expires > ?`
+    )
+    .get(token, now);
+  
+  if (user) {
+    console.log(`[USER.SERVICE] ✓ Usuário encontrado: ID=${user.id}, Email=${user.email}`);
+  } else {
+    console.log(`[USER.SERVICE] ❌ Nenhum usuário encontrado com esse token`);
+  }
+  
+  return user || null;
+}
+
+/**
+ * Marca email como verificado
+ */
+export async function markEmailAsVerified(userId) {
+  console.log(`[USER.SERVICE] Marcando email verificado para user ID: ${userId}`);
+  
+  const result = dbs.cliente.prepare(
+    `UPDATE users 
+     SET email_verified = 1, verification_token = NULL, verification_expires = NULL
+     WHERE id = ?`
+  ).run(userId);
+  
+  console.log(`[USER.SERVICE] ✓ Linhas afetadas: ${result.changes}`);
+  
+  // Verificar se foi atualizado
+  const updated = dbs.cliente.prepare(
+    `SELECT id, email, email_verified FROM users WHERE id = ?`
+  ).get(userId);
+  
+  console.log(`[USER.SERVICE] Novo estado do usuário: email_verified=${updated?.email_verified}`);
 }

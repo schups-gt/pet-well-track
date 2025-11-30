@@ -36,6 +36,31 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     if (savedToken) setToken(savedToken);
   }, []);
 
+  // Logout automático ao fechar a aba/site
+  useEffect(() => {
+    const handleBeforeUnload = (e: BeforeUnloadEvent) => {
+      // Limpar autenticação quando o usuário fecha a aba/site
+      localStorage.removeItem("user");
+      localStorage.removeItem("token");
+      console.log("🔒 Sessão finalizada - usuário saiu do site");
+    };
+
+    // Também limpar ao usar o botão voltar ou navegação
+    const handlePageHide = () => {
+      localStorage.removeItem("user");
+      localStorage.removeItem("token");
+      console.log("🔒 Sessão finalizada - página oculta");
+    };
+
+    window.addEventListener("beforeunload", handleBeforeUnload);
+    window.addEventListener("pagehide", handlePageHide);
+
+    return () => {
+      window.removeEventListener("beforeunload", handleBeforeUnload);
+      window.removeEventListener("pagehide", handlePageHide);
+    };
+  }, []);
+
   const login = (userData: User, jwt: string) => {
     setUser(userData);
     setToken(jwt);

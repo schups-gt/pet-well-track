@@ -9,7 +9,7 @@ const Registrar = () => {
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      const res = await api.post("/register", { name, email, password: senha });
+      const res = await api.post("/auth/register", { name, email, password: senha });
       alert("Registrado com sucesso!");
       console.log(res.data);
     } catch (err: any) {

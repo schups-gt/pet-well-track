@@ -100,6 +100,7 @@ export default function MeusPets() {
           </Button>
         </Link>
       </div>
+      <Footer />
     </div>
   );
 }

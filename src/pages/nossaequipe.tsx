@@ -1,4 +1,5 @@
 import Header from "@/components/Header"; // 1. IMPORTAÇÃO DO HEADER
+import Footer from "@/components/Footer";
 import TeamHero from "@/components/TeamHero";
 import TeamMember from "@/components/TeamMember";
 // Mantém-se as importações das suas fotos, que serão usadas como ilustrações
@@ -83,6 +84,7 @@ const NossaEquipe = () => {
             </p>
           </div>
         </section>
+        <Footer />
       </div>
     </>
   );
