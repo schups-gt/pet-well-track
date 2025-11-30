@@ -54,42 +54,31 @@ const CadastrarPet = () => {
   const species = watch("species");
 
   const onSubmit = async (data: PetFormData) => {
-    
-  setIsSubmitting(true);
-  try {
-    const response = await fetch("http://localhost:3000/api/auth/pets", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
+    setIsSubmitting(true);
+    try {
+      const response = await api.post("/pets", {
         nome: data.petName,
         especie: data.species,
         raca: data.breed,
-        idade: data.age,
-        peso: data.weight,
-        tutor: data.ownerName,
-        telefone: data.ownerPhone,
-        status: "Saudável",
-        imagem: data.species === "cachorro"
-          ? "https://i.imgur.com/6a0PzVY.png"
-          : "https://i.imgur.com/svGvZ1U.png",
-      }),
-    });
+        nascimento: data.age,
+        peso_kg: data.weight,
+      });
 
-    if (!response.ok) throw new Error("Erro ao cadastrar pet");
-    const newPet = await response.json();
+      const newPet = response.data.data;
 
-    toast.success("Pet cadastrado com sucesso!", {
-      description: `${newPet.nome} foi adicionado ao sistema.`,
-    });
+      toast.success("Pet cadastrado com sucesso!", {
+        description: `${newPet.nome} foi adicionado ao sistema.`,
+      });
 
-    // limpa o formulário
-    Object.keys(data).forEach((key) => setValue(key as any, ""));
-  } catch (error) {
-    toast.error("Erro ao cadastrar pet", { description: "Tente novamente mais tarde." });
-  } finally {
-    setIsSubmitting(false);
-  }
-};
+      // limpa o formulário
+      Object.keys(data).forEach((key) => setValue(key as any, ""));
+    } catch (error: any) {
+      console.error("Erro ao cadastrar pet:", error);
+      toast.error("Erro ao cadastrar pet", { description: "Tente novamente mais tarde." });
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-background">

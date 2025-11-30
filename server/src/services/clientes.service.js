@@ -89,11 +89,11 @@ export async function createCliente({ ownerId, nome, email, telefone }) {
   });
 }
 
-export async function updateCliente({ ownerId, id, nome, email, telefone }) {
+export async function updateCliente({ ownerId, id, nome, email, telefone, endereco, cidade, estado, cep }) {
   return repo.update({
     ownerId,
     id,
-    data: { nome, email, telefone },
+    data: { nome, email, telefone, endereco, cidade, estado, cep },
   });
 }
 

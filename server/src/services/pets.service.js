@@ -27,9 +27,9 @@ export function getPetById({ ownerId, id }) {
   `).get(ownerId, id) || null;
 }
 
-export function createPet({ ownerId, cliente_id, nome, especie, raca, idade, peso_kg }) {
+export function createPet({ ownerId, cliente_id, nome, especie, raca, nascimento, peso_kg }) {
   const info = dbs.animal.prepare(`
-    INSERT INTO pets (owner_id, cliente_id, nome, especie, raca, idade, peso_kg)
+    INSERT INTO pets (owner_id, cliente_id, nome, especie, raca, nascimento, peso_kg)
     VALUES (?,?,?,?,?,?,?)
   `).run(
     ownerId,
@@ -37,13 +37,13 @@ export function createPet({ ownerId, cliente_id, nome, especie, raca, idade, pes
     nome,
     especie ?? null,
     raca ?? null,
-    (idade ?? null),
+    nascimento ?? null,
     (peso_kg ?? null)
   );
   return getPetById({ ownerId, id: Number(info.lastInsertRowid) });
 }
 
-export async function updatePet({ ownerId, id, cliente_id, nome, especie, raca, idade, peso_kg }) {
+export async function updatePet({ ownerId, id, cliente_id, nome, especie, raca, nascimento, peso_kg }) {
   const cur = await getPetById({ ownerId, id });
   if (!cur) return null;
 
@@ -53,7 +53,7 @@ export async function updatePet({ ownerId, id, cliente_id, nome, especie, raca, 
            nome       = COALESCE(?, nome),
            especie    = COALESCE(?, especie),
            raca       = COALESCE(?, raca),
-           idade      = COALESCE(?, idade),
+           nascimento = COALESCE(?, nascimento),
            peso_kg    = COALESCE(?, peso_kg),
            updated_at = datetime('now')
      WHERE owner_id=? AND id=?
@@ -62,7 +62,7 @@ export async function updatePet({ ownerId, id, cliente_id, nome, especie, raca, 
     nome ?? cur.nome,
     especie ?? cur.especie,
     raca ?? cur.raca,
-    (idade ?? cur.idade),
+    nascimento ?? cur.nascimento,
     (peso_kg ?? cur.peso_kg),
     ownerId, id
   );

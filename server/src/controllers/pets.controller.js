@@ -33,27 +33,42 @@ export async function getByIdController(req, res, next) {
 // POST /api/pets
 export async function createController(req, res, next) {
   try {
-    if (!req.user) return res.status(401).json({ success: false, error: "Unauthorized" });
+    console.log("[PET CREATE] Iniciando criação de pet...");
+    console.log("[PET CREATE] req.user:", req.user);
+    console.log("[PET CREATE] req.ownerId:", req.ownerId);
+    
+    if (!req.user) {
+      console.log("[PET CREATE] ❌ req.user não existe");
+      return res.status(401).json({ success: false, error: "Unauthorized" });
+    }
 
     const ownerId = req.ownerId;
+    console.log("[PET CREATE] Chamando ensureClienteForUser...");
     // garante cliente vinculado ao user logado
     const cliente = ensureClienteForUser({ ownerId, user: req.user });
+    console.log("[PET CREATE] Cliente garantido:", cliente?.id);
 
-    const { nome, especie, raca, idade, peso_kg } = req.body;
+    const { nome, especie, raca, nascimento, peso_kg } = req.body;
+    console.log("[PET CREATE] Dados recebidos:", { nome, especie, raca, nascimento, peso_kg });
+    
     if (!nome) return res.status(400).json({ success: false, error: "Campo obrigatório: nome" });
 
+    console.log("[PET CREATE] Chamando createPet...");
     const data = await createPet({
       ownerId,
-      cliente_id: cliente.id, // usa cliente_id (não tutor_id)
+      cliente_id: cliente.id,
       nome,
       especie,
       raca,
-      idade,
+      nascimento,
       peso_kg,
     });
 
+    console.log("[PET CREATE] Pet criado com sucesso:", data);
     res.status(201).json({ success: true, data });
   } catch (err) {
+    console.log("[PET CREATE] ❌ ERRO:", err.message);
+    console.log("[PET CREATE] Stack:", err.stack);
     next(err);
   }
 }

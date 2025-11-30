@@ -11,6 +11,13 @@ export function verifyJWT(req, res, next) {
     req.userId = decoded.userId;
     req.userRole = decoded.role; // <- ESSENCIAL
     req.ownerId = decoded.ownerId;
+    // req.user precisa ter .id para ensureClienteForUser funcionar
+    req.user = {
+      id: decoded.userId, // <- IMPORTANTE: copiar userId para id
+      name: decoded.name,
+      email: decoded.email,
+      role: decoded.role
+    };
     next();
   } catch (err) {
     return res.status(401).json({ error: "Token inválido" });

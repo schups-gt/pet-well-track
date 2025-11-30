@@ -56,12 +56,12 @@ export async function updateController(req, res, next) {
     const id = Number(req.params.id);
     if (Number.isNaN(id)) return res.status(400).json({ success:false, error:"ID inválido" });
 
-    const { nome, email, telefone } = req.body || {};
+    const { nome, email, telefone, endereco, cidade, estado, cep } = req.body || {};
     if (nome !== undefined && (typeof nome !== "string" || nome.trim().length < 2)) {
       return res.status(400).json({ success:false, error:"Nome inválido" });
     }
 
-    const upd = await updateCliente({ ownerId, id, nome, email, telefone });
+    const upd = await updateCliente({ ownerId, id, nome, email, telefone, endereco, cidade, estado, cep });
     if (!upd) return res.status(404).json({ success:false, error:"Cliente não encontrado" });
 
     return res.json({ success: true, data: upd });
