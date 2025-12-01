@@ -7,6 +7,11 @@ interface User {
   role: string;
   owner_id: number;
   token?: string;
+  telefone?: string;
+  endereco?: string;
+  cidade?: string;
+  estado?: string;
+  cep?: string;
 }
 
 interface AuthContextType {

@@ -9,6 +9,7 @@ import {
   resetPasswordConfirmController,
   verifyEmailController,
   resendVerificationEmailController,
+  updateProfileController,
 } from "../controllers/auth.controller.js";
 import { verifyJWT } from "../middleware/verifyJWT.js"; // JWT
 
@@ -27,6 +28,7 @@ router.post("/logout", logoutController);
 
 // protegida por JWT
 router.get("/me", verifyJWT, meController); // trocado
+router.put("/user/profile", verifyJWT, updateProfileController);
 
 export default router;
 

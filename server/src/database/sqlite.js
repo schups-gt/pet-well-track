@@ -57,6 +57,13 @@ function ensureTables() {
   try { dbs.cliente.exec(`ALTER TABLE users ADD COLUMN verification_token TEXT;`); } catch {}
   try { dbs.cliente.exec(`ALTER TABLE users ADD COLUMN verification_expires INTEGER;`); } catch {}
 
+  // Campos de perfil (telefone, endereço, etc.)
+  try { dbs.cliente.exec(`ALTER TABLE users ADD COLUMN telefone TEXT;`); } catch {}
+  try { dbs.cliente.exec(`ALTER TABLE users ADD COLUMN endereco TEXT;`); } catch {}
+  try { dbs.cliente.exec(`ALTER TABLE users ADD COLUMN cidade TEXT;`); } catch {}
+  try { dbs.cliente.exec(`ALTER TABLE users ADD COLUMN estado TEXT;`); } catch {}
+  try { dbs.cliente.exec(`ALTER TABLE users ADD COLUMN cep TEXT;`); } catch {}
+
   // clientes: colunas estendidas (tentativa por ALTER; se falhar, migração abaixo resolve)
   try { dbs.cliente.exec(`ALTER TABLE clientes ADD COLUMN endereco TEXT;`); } catch {}
   try { dbs.cliente.exec(`ALTER TABLE clientes ADD COLUMN bairro TEXT;`); } catch {}

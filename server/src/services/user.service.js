@@ -22,7 +22,7 @@ export async function findUserById(id) {
   return (
     dbs.cliente
       .prepare(`
-        SELECT id, name, email, role, owner_id
+        SELECT id, name, email, role, owner_id, telefone, endereco, cidade, estado, cep
         FROM users
         WHERE id = ?
       `)
@@ -138,6 +138,7 @@ export async function markEmailAsVerified(userId) {
      WHERE id = ?`
   ).run(userId);
   
+  
   console.log(`[USER.SERVICE] ✓ Linhas afetadas: ${result.changes}`);
   
   // Verificar se foi atualizado
@@ -146,4 +147,32 @@ export async function markEmailAsVerified(userId) {
   ).get(userId);
   
   console.log(`[USER.SERVICE] Novo estado do usuário: email_verified=${updated?.email_verified}`);
+}
+
+/**
+ * Atualiza perfil do usuário (name, telefone, endereco, cidade, estado, cep)
+ */
+export async function updateUserProfile(userId, profileData) {
+  const { name, telefone, endereco, cidade, estado, cep } = profileData;
+  
+  const result = dbs.cliente.prepare(`
+    UPDATE users 
+    SET 
+      name = COALESCE(?, name),
+      telefone = COALESCE(?, telefone),
+      endereco = COALESCE(?, endereco),
+      cidade = COALESCE(?, cidade),
+      estado = COALESCE(?, estado),
+      cep = COALESCE(?, cep)
+    WHERE id = ?
+  `).run(name, telefone, endereco, cidade, estado, cep, userId);
+  
+  // Retornar dados atualizados
+  const updatedUser = dbs.cliente.prepare(`
+    SELECT id, name, email, telefone, endereco, cidade, estado, cep, role, owner_id
+    FROM users
+    WHERE id = ?
+  `).get(userId);
+  
+  return updatedUser;
 }

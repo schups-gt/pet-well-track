@@ -13,6 +13,7 @@ import {
   findUserByVerificationToken,
   markEmailAsVerified,
   isEmailVerified,
+  updateUserProfile,
 } from "../services/user.service.js";
 
 import {
@@ -210,6 +211,11 @@ export async function meController(req, res, next) {
         email: user.email,
         role: user.role,
         owner_id: user.owner_id,
+        telefone: user.telefone,
+        endereco: user.endereco,
+        cidade: user.cidade,
+        estado: user.estado,
+        cep: user.cep,
       },
     });
   } catch (err) {
@@ -360,6 +366,45 @@ export async function resendVerificationEmailController(req, res, next) {
       message: "Email de verificação reenviado" 
     });
   } catch (err) {
+    next(err);
+  }
+}
+
+// ATUALIZAR PERFIL (requer verifyJWT)
+export async function updateProfileController(req, res, next) {
+  try {
+    const { name, telefone, endereco, cidade, estado, cep } = req.body;
+    
+    if (!name) {
+      return res.status(400).json({ 
+        success: false, 
+        error: "Nome é obrigatório" 
+      });
+    }
+
+    const updatedUser = await updateUserProfile(req.userId, {
+      name,
+      telefone: telefone || null,
+      endereco: endereco || null,
+      cidade: cidade || null,
+      estado: estado || null,
+      cep: cep || null,
+    });
+
+    if (!updatedUser) {
+      return res.status(404).json({ 
+        success: false, 
+        error: "Usuário não encontrado" 
+      });
+    }
+
+    return res.json({
+      success: true,
+      message: "Perfil atualizado com sucesso!",
+      user: updatedUser
+    });
+  } catch (err) {
+    console.error("Erro ao atualizar perfil:", err);
     next(err);
   }
 }

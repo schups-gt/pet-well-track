@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useAuth } from "@/context/AuthContext"; // Corrigido para '@/contexts/AuthContext'
 import { useNavigate } from "react-router-dom";
 import Header from "@/components/Header";
@@ -20,6 +20,7 @@ export default function Perfil() {
   
   // NOVO: Estado de carregamento do botão
   const [isLoading, setIsLoading] = useState(false);
+  const [isLoadingProfile, setIsLoadingProfile] = useState(true);
 
   const [formData, setFormData] = useState({
     nome: user?.name || "",
@@ -31,6 +32,43 @@ export default function Perfil() {
     cep: "",
     foto: ""
   });
+
+  // NOVO: useEffect para carregar dados do perfil ao montar
+  useEffect(() => {
+    if (!user || !user.token) {
+      setIsLoadingProfile(false);
+      return;
+    }
+
+    const loadUserProfile = async () => {
+      try {
+        const response = await api.get('/auth/me', {
+          headers: {
+            Authorization: `Bearer ${user.token}`,
+          },
+        });
+
+        const userData = response.data.data;
+        setFormData(prev => ({
+          ...prev,
+          nome: userData.name || prev.nome,
+          email: userData.email || prev.email,
+          telefone: userData.telefone || "",
+          endereco: userData.endereco || "",
+          cidade: userData.cidade || "",
+          estado: userData.estado || "",
+          cep: userData.cep || "",
+        }));
+      } catch (error) {
+        console.error("Erro ao carregar perfil:", error);
+        // Se houver erro, manter os dados atuais
+      } finally {
+        setIsLoadingProfile(false);
+      }
+    };
+
+    loadUserProfile();
+  }, [user]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
@@ -61,19 +99,21 @@ export default function Perfil() {
         return;
     }
 
-    // 2. Coletar apenas os campos que o backend aceita (Nome e Email são os focos)
+    // 2. Coletar todos os campos para atualização
     const updateData = {
         name: formData.nome,
-        // O email geralmente é lido do token e não é editável facilmente
-        // Mas se for editável, seria: email: formData.email, 
-        // Vamos focar no nome primeiro.
+        telefone: formData.telefone,
+        endereco: formData.endereco,
+        cidade: formData.cidade,
+        estado: formData.estado,
+        cep: formData.cep,
     };
 
     setIsLoading(true);
 
     try {
-        // 3. Enviar a requisição PATCH/PUT. Assumindo que seu Back-end tem o endpoint /api/user/profile
-        const response = await api.put('/user/profile', updateData, {
+        // 3. Enviar a requisição PUT para /auth/user/profile
+        const response = await api.put('/auth/user/profile', updateData, {
             headers: {
                 Authorization: `Bearer ${user.token}`, // Envia o token para autenticação
             },
@@ -81,6 +121,18 @@ export default function Perfil() {
 
         // 4. Se o Back-end retornar o objeto de usuário atualizado:
         const updatedUser = response.data.user;
+        
+        // Atualizar o formData com os dados retornados
+        setFormData(prev => ({
+          ...prev,
+          nome: updatedUser.name || prev.nome,
+          email: updatedUser.email || prev.email,
+          telefone: updatedUser.telefone || prev.telefone,
+          endereco: updatedUser.endereco || prev.endereco,
+          cidade: updatedUser.cidade || prev.cidade,
+          estado: updatedUser.estado || prev.estado,
+          cep: updatedUser.cep || prev.cep,
+        }));
         
         // NOVO: Atualiza o contexto global de autenticação com os novos dados
         // Isso fará com que o Header e o Perfil reflitam as mudanças instantaneamente.
@@ -91,7 +143,12 @@ export default function Perfil() {
             name: updatedUser.name || user.name,
             email: user.email,
             role: user.role,
-            owner_id: user.owner_id
+            owner_id: user.owner_id,
+            telefone: updatedUser.telefone,
+            endereco: updatedUser.endereco,
+            cidade: updatedUser.cidade,
+            estado: updatedUser.estado,
+            cep: updatedUser.cep,
           }, currentToken);
         }
 
